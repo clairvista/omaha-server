@@ -79,6 +79,27 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
    
    IF NOT EXISTS (SELECT 1
                     FROM information_schema.tables
+                   WHERE table_name = 'operating_systems_history'
+                     AND table_schema = 'leomaha') THEN
+      CREATE TABLE leomaha.operating_systems_history
+           ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+             user_id INT UNSIGNED NOT NULL,
+             platform VARCHAR(255) NOT NULL,
+             version VARCHAR(255) NOT NULL,
+             service_pack VARCHAR(255),
+             architecture VARCHAR(255),
+             created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+             PRIMARY KEY(id) );
+             
+       ALTER TABLE leomaha.operating_systems_history
+           ADD FOREIGN KEY (user_id)
+           REFERENCES leomaha.users(id);
+   ELSE
+      SELECT 'Operating Systems History table already exists.' AS 'warning';
+   END IF;
+   
+   IF NOT EXISTS (SELECT 1
+                    FROM information_schema.tables
                    WHERE table_name = 'updates'
                      AND table_schema = 'leomaha') THEN
       CREATE TABLE leomaha.updates
