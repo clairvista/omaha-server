@@ -19,12 +19,11 @@ public class UpdateCheck {
    private Integer id;
 
    @ManyToOne
-   @JoinColumn(name="application_version_id")
-   private ApplicationVersion applicationVersion;
+   @JoinColumn(name="application_version_request_id")
+   private ApplicationVersionRequest applicationVersionRequest;
 
-   @ManyToOne
-   @JoinColumn(name="request_id")
-   private Request request;
+   @Column(name="access_token")
+   private String accessToken;
 
    @Column(name="update_disabled")
    private Boolean updateDisabled;
@@ -43,20 +42,20 @@ public class UpdateCheck {
       this.id = id;
    }
 
-   public ApplicationVersion getApplicationVersion() {
-      return applicationVersion;
+   public ApplicationVersionRequest getApplicationVersionRequest() {
+      return applicationVersionRequest;
    }
 
-   public void setApplicationVersion(ApplicationVersion applicationVersion) {
-      this.applicationVersion = applicationVersion;
+   public void setApplicationVersionRequest(ApplicationVersionRequest applicationVersionRequest) {
+      this.applicationVersionRequest = applicationVersionRequest;
    }
 
-   public Request getRequest() {
-      return request;
+   public String getAccessToken() {
+      return accessToken;
    }
 
-   public void setRequest(Request request) {
-      this.request = request;
+   public void setAccessToken(String accessToken) {
+      this.accessToken = accessToken;
    }
 
    public Boolean getUpdateDisabled() {

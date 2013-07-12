@@ -32,6 +32,8 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
              access_token VARCHAR(255),
              download_base_url VARCHAR(255) NOT NULL,
              installer_name VARCHAR(255) NOT NULL,
+             installer_hash VARCHAR(255) NOT NULL,
+             installer_size INT UNSIGNED NOT NULL,
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
              created_by VARCHAR(255) NOT NULL,
              PRIMARY KEY(id) );
@@ -75,27 +77,6 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
            REFERENCES leomaha.operating_systems(id);
    ELSE
       SELECT 'Users table already exists.' AS 'warning';
-   END IF;
-   
-   IF NOT EXISTS (SELECT 1
-                    FROM information_schema.tables
-                   WHERE table_name = 'operating_systems_history'
-                     AND table_schema = 'leomaha') THEN
-      CREATE TABLE leomaha.operating_systems_history
-           ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-             user_id INT UNSIGNED NOT NULL,
-             platform VARCHAR(255) NOT NULL,
-             version VARCHAR(255) NOT NULL,
-             service_pack VARCHAR(255),
-             architecture VARCHAR(255),
-             created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-             PRIMARY KEY(id) );
-             
-       ALTER TABLE leomaha.operating_systems_history
-           ADD FOREIGN KEY (user_id)
-           REFERENCES leomaha.users(id);
-   ELSE
-      SELECT 'Operating Systems History table already exists.' AS 'warning';
    END IF;
    
    IF NOT EXISTS (SELECT 1
@@ -176,11 +157,16 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
              client_version_id INT UNSIGNED NOT NULL,
              is_machine INT(1) UNSIGNED NOT NULL,
              user_id INT UNSIGNED,
+             operating_system_id INT UNSIGNED,
              session_id INT UNSIGNED NOT NULL,
              install_source VARCHAR(255),
              origin_url VARCHAR(255),
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY(id) );
+             
+       ALTER TABLE leomaha.requests
+           ADD FOREIGN KEY (operating_system_id)
+           REFERENCES leomaha.operating_systems(id);
              
        ALTER TABLE leomaha.requests
            ADD FOREIGN KEY (session_id)
@@ -190,25 +176,51 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
    END IF;
    
    IF NOT EXISTS (SELECT 1
+                    FROM information_schema.tables
+                   WHERE table_name = 'application_version_requests'
+                     AND table_schema = 'leomaha') THEN
+      CREATE TABLE leomaha.application_version_requests
+           ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
+             application_version_id INT UNSIGNED,
+             request_id INT UNSIGNED NOT NULL,
+             next_version VARCHAR(255),
+             language VARCHAR(255) NOT NULL,
+             brand VARCHAR(255) NOT NULL,
+             client VARCHAR(255),
+             additional_params VARCHAR(255),
+             experiments VARCHAR(255),
+             install_id VARCHAR(255),
+             install_age INT,
+             created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+             PRIMARY KEY(id) );
+             
+       ALTER TABLE leomaha.application_version_requests
+           ADD FOREIGN KEY (application_version_id)
+           REFERENCES leomaha.application_versions(id);
+             
+       ALTER TABLE leomaha.application_version_requests
+           ADD FOREIGN KEY (request_id)
+           REFERENCES leomaha.requests(id);
+   ELSE
+      SELECT 'Application Version Requests table already exists.' AS 'warning';
+   END IF;
+   
+   IF NOT EXISTS (SELECT 1
                      FROM information_schema.tables
                     WHERE table_name = 'update_checks'
                       AND table_schema = 'leomaha') THEN
       CREATE TABLE leomaha.update_checks
            ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-             application_version_id INT UNSIGNED,
-             request_id INT UNSIGNED NOT NULL,
+             application_version_request_id INT UNSIGNED NOT NULL,
+             access_token VARCHAR(255),
              update_disabled INT(1),
              target_version_prefix VARCHAR(255),
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY(id) );
              
        ALTER TABLE leomaha.update_checks
-           ADD FOREIGN KEY (application_version_id)
-           REFERENCES leomaha.application_versions(id);
-             
-       ALTER TABLE leomaha.update_checks
-           ADD FOREIGN KEY (request_id)
-           REFERENCES leomaha.requests(id);
+           ADD FOREIGN KEY (application_version_request_id)
+           REFERENCES leomaha.application_version_requests(id);
    ELSE
       SELECT 'Update Checks table already exists.' AS 'warning';
    END IF;
@@ -219,21 +231,16 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
                       AND table_schema = 'leomaha') THEN
       CREATE TABLE leomaha.pings
            ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-             application_version_id INT UNSIGNED,
-             request_id INT UNSIGNED NOT NULL,
-             was_active INT(1) UNSIGNED,
+             application_version_request_id INT UNSIGNED NOT NULL,
+             was_active INT(1) UNSIGNED NOT NULL DEFAULT 0,
              last_active INT,
              last_present INT,
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
              PRIMARY KEY(id) );
              
        ALTER TABLE leomaha.pings
-           ADD FOREIGN KEY (application_version_id)
-           REFERENCES leomaha.application_versions(id);
-             
-       ALTER TABLE leomaha.pings
-           ADD FOREIGN KEY (request_id)
-           REFERENCES leomaha.requests(id);
+           ADD FOREIGN KEY (application_version_request_id)
+           REFERENCES leomaha.application_version_requests(id);
    ELSE
       SELECT 'Pings table already exists.' AS 'warning';
    END IF;
@@ -244,8 +251,7 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
                       AND table_schema = 'leomaha') THEN
       CREATE TABLE leomaha.events
            ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-             application_version_id INT UNSIGNED,
-             request_id INT UNSIGNED NOT NULL,
+             application_version_request_id INT UNSIGNED NOT NULL,
              event_type INT NOT NULL,
              event_result INT NOT NULL,
              error_code INT,
@@ -263,12 +269,8 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
              PRIMARY KEY(id) );
              
        ALTER TABLE leomaha.events
-           ADD FOREIGN KEY (application_version_id)
-           REFERENCES leomaha.application_versions(id);
-             
-       ALTER TABLE leomaha.events
-           ADD FOREIGN KEY (request_id)
-           REFERENCES leomaha.requests(id);
+           ADD FOREIGN KEY (application_version_request_id)
+           REFERENCES leomaha.application_version_requests(id);
    ELSE
       SELECT 'Events table already exists.' AS 'warning';
    END IF;

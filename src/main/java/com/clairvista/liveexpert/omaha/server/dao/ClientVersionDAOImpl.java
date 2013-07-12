@@ -27,7 +27,7 @@ public class ClientVersionDAOImpl implements ClientVersionDAO {
 
    @SuppressWarnings("unchecked")
    public ClientVersion findOrCreateClientVersion(String versionID) {
-      Query query = getCurrentSession().createQuery("from ClientVersion where versionID = :versionID");
+      Query query = getCurrentSession().createQuery("FROM ClientVersion WHERE versionID = :versionID");
       query.setString("versionID", versionID);
       List<ClientVersion> versions = query.list();
       
@@ -47,7 +47,7 @@ public class ClientVersionDAOImpl implements ClientVersionDAO {
 
    @SuppressWarnings("unchecked")
    public List<ClientVersion> getClientVersions() {
-      return getCurrentSession().createQuery("from ClientVersion").list();
+      return getCurrentSession().createQuery("FROM ClientVersion").list();
    }
 
 }

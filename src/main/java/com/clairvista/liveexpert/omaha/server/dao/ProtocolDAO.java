@@ -8,7 +8,7 @@ public interface ProtocolDAO {
 
    // This is a static lookup table, so it should never be modified programmatically.
    public Protocol getProtocol(int id);
-   public Protocol getProtocol(String protocolID);
+   public Protocol findProtocol(String protocolID);
    public List<Protocol> getProtocols();
    
 }

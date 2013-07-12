@@ -28,6 +28,15 @@ public class Application {
 
    @Column(name="created_by")
    private String createdBy;
+   
+   public Application() { }
+   
+   public Application(String name, String description, String appID, String creator) {
+      this.name = name;
+      this.description = description;
+      this.appID = appID;
+      createdBy = creator;
+   }
 
    public Integer getId() {
       return id;

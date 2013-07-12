@@ -7,6 +7,7 @@ import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
+import com.clairvista.liveexpert.omaha.server.model.Application;
 import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
 
 @Repository
@@ -32,6 +33,8 @@ public class ApplicationVersionDAOImpl implements ApplicationVersionDAO {
          versionToUpdate.setAccessToken(applicationVersion.getAccessToken());
          versionToUpdate.setDownloadBaseURL(applicationVersion.getDownloadBaseURL());
          versionToUpdate.setInstallerName(applicationVersion.getInstallerName());
+         versionToUpdate.setInstallerHash(applicationVersion.getInstallerHash());
+         versionToUpdate.setInstallerSize(applicationVersion.getInstallerSize());
          versionToUpdate.setCreatedTime(applicationVersion.getCreatedTime());
          versionToUpdate.setCreatedBy(applicationVersion.getCreatedBy());
 
@@ -44,6 +47,33 @@ public class ApplicationVersionDAOImpl implements ApplicationVersionDAO {
       return version;
    }
 
+   @SuppressWarnings("unchecked")
+   public ApplicationVersion findByVersionForApplication(Application app, String version) {
+      List<ApplicationVersion> versions = getCurrentSession().createQuery("FROM ApplicationVersion" +
+            " WHERE application = :applicationID" +
+            " AND versionID = :versionID")
+            .setInteger("applicationID", app.getId())
+            .setString("versionID", version)
+            .list();
+      if(versions.size() == 1) {
+         return versions.get(0);
+      }
+      return null;
+   }
+
+   @SuppressWarnings("unchecked")
+   public ApplicationVersion findCurrentForApplication(Application app) {
+      List<ApplicationVersion> versions = getCurrentSession().createQuery("FROM ApplicationVersion" +
+            " WHERE application = :applicationID" +
+            " ORDER BY versionID DESC")
+            .setInteger("applicationID", app.getId())
+            .list();
+      if(versions.size() > 0) {
+         return versions.get(0);
+      }
+      return null;
+   }
+
    public void deleteApplicationVersion(int id) {
       ApplicationVersion version = getApplicationVersion(id);
       if (version != null)
@@ -52,7 +82,7 @@ public class ApplicationVersionDAOImpl implements ApplicationVersionDAO {
 
    @SuppressWarnings("unchecked")
    public List<ApplicationVersion> getApplicationVersions() {
-      return getCurrentSession().createQuery("from ApplicationVersion").list();
+      return getCurrentSession().createQuery("FROM ApplicationVersion").list();
    }
 
 }

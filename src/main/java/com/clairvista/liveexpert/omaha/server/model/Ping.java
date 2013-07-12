@@ -19,12 +19,8 @@ public class Ping {
    private Integer id;
 
    @ManyToOne
-   @JoinColumn(name="application_version_id")
-   private ApplicationVersion applicationVersion;
-
-   @ManyToOne
-   @JoinColumn(name="request_id")
-   private Request request;
+   @JoinColumn(name="application_version_request_id")
+   private ApplicationVersionRequest applicationVersionRequest;
 
    @Column(name="was_active")
    private Boolean wasActive;
@@ -46,20 +42,12 @@ public class Ping {
       this.id = id;
    }
 
-   public ApplicationVersion getApplicationVersion() {
-      return applicationVersion;
+   public ApplicationVersionRequest getApplicationVersionRequest() {
+      return applicationVersionRequest;
    }
 
-   public void setApplicationVersion(ApplicationVersion applicationVersion) {
-      this.applicationVersion = applicationVersion;
-   }
-
-   public Request getRequest() {
-      return request;
-   }
-
-   public void setRequest(Request request) {
-      this.request = request;
+   public void setApplicationVersionRequest(ApplicationVersionRequest applicationVersionRequest) {
+      this.applicationVersionRequest = applicationVersionRequest;
    }
 
    public Boolean getWasActive() {

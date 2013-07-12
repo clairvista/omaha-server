@@ -1,15 +1,16 @@
 package com.clairvista.liveexpert.omaha.server.service;
 
-import java.util.List;
+import org.w3c.dom.Element;
 
 import com.clairvista.liveexpert.omaha.server.model.Application;
+import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
+import com.clairvista.liveexpert.omaha.server.model.Request;
+import com.clairvista.liveexpert.omaha.server.response.ApplicationResponse;
 
 public interface ApplicationService {
 
-   public void addApplication(Application application);
-   public void updateApplication(Application application);
-   public Application getApplication(int id);
-   public void deleteApplication(int id);
-   public List<Application> getApplications();
+   public Application lookupApplication(Element appElem);
+   public ApplicationVersion lookupApplicationVersion(Application app, Element appElem);
+   public ApplicationResponse processApplication(Application app, Request request, Element appElem);
 
 }

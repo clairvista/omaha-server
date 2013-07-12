@@ -43,7 +43,7 @@ public class UserDAOImpl implements UserDAO {
 
    @SuppressWarnings("unchecked")
    public User findOrCreateUser(String userID) {
-      Query query = getCurrentSession().createQuery("from User where userID = :userID");
+      Query query = getCurrentSession().createQuery("FROM User WHERE userID = :userID");
       query.setString("userID", userID);
       List<User> users = query.list();
 
@@ -67,7 +67,7 @@ public class UserDAOImpl implements UserDAO {
 
    @SuppressWarnings("unchecked")
    public List<User> getUsers() {
-      return getCurrentSession().createQuery("from User").list();
+      return getCurrentSession().createQuery("FROM User").list();
    }
 
 }

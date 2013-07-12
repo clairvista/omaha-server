@@ -2,6 +2,7 @@ package com.clairvista.liveexpert.omaha.server.dao;
 
 import java.util.List;
 
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,10 +43,33 @@ public class OperatingSystemDAOImpl implements OperatingSystemDAO {
       return os;
    }
 
+   @SuppressWarnings("unchecked")
    public OperatingSystem findOrCreateOperatingSystem(String platform, String version, String servicePack,
          String architecture) {
-      // TODO Auto-generated method stub
-      return null;
+      Query query = getCurrentSession().createQuery("FROM OperatingSystem " +
+      		"WHERE platform = :platform " +
+      		"AND version = :version " +
+      		"AND servicePack = :servicePack " +
+      		"AND architecture = :architecture");
+      query.setString("platform", platform);
+      query.setString("version", version);
+      query.setString("servicePack", servicePack);
+      query.setString("architecture", architecture);
+      List<OperatingSystem> operatingSystems = query.list();
+
+      OperatingSystem operatingSystem = null;
+      if(operatingSystems == null || operatingSystems.isEmpty()) {
+         operatingSystem = new OperatingSystem();
+         operatingSystem.setPlatform(platform);
+         operatingSystem.setVersion(version);
+         operatingSystem.setServicePack(servicePack);
+         operatingSystem.setArchitecture(architecture);
+         getCurrentSession().save(operatingSystem);
+      } else if(operatingSystems.size() == 1) {
+         operatingSystem = operatingSystems.get(0);
+      }
+
+      return operatingSystem;
    }
 
    public void deleteOperatingSystem(int id) {
@@ -56,7 +80,7 @@ public class OperatingSystemDAOImpl implements OperatingSystemDAO {
 
    @SuppressWarnings("unchecked")
    public List<OperatingSystem> getOperatingSystems() {
-      return getCurrentSession().createQuery("from OperatingSystem").list();
+      return getCurrentSession().createQuery("FROM OperatingSystem").list();
    }
 
 }

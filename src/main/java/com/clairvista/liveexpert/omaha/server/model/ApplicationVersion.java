@@ -34,11 +34,30 @@ public class ApplicationVersion {
    @Column(name="installer_name")
    private String installerName;
 
+   @Column(name="installer_hash")
+   private String installerHash;
+
+   @Column(name="installer_size")
+   private Integer installerSize;
+
    @Column(name="created_time")
    private Date createdTime;
 
    @Column(name="created_by")
    private String createdBy;
+
+   public ApplicationVersion() { }
+
+   public ApplicationVersion(Application app, String versionID, String downloadBaseURL, String installerName,
+         String installerHash, int installerSize, String creator) {
+      application = app;
+      this.versionID = versionID;
+      this.downloadBaseURL = downloadBaseURL;
+      this.installerName = installerName;
+      this.installerHash = installerHash;
+      this.installerSize = installerSize;
+      createdBy = creator;
+   }
 
    public Integer getId() {
       return id;
@@ -86,6 +105,22 @@ public class ApplicationVersion {
 
    public void setInstallerName(String installerName) {
       this.installerName = installerName;
+   }
+
+   public String getInstallerHash() {
+      return installerHash;
+   }
+
+   public void setInstallerHash(String installerHash) {
+      this.installerHash = installerHash;
+   }
+
+   public Integer getInstallerSize() {
+      return installerSize;
+   }
+
+   public void setInstallerSize(Integer installerSize) {
+      this.installerSize = installerSize;
    }
 
    public Date getCreatedTime() {

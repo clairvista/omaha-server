@@ -11,8 +11,11 @@ import java.util.Map;
 import javax.servlet.ServletInputStream;
 import javax.servlet.http.HttpServletRequest;
 
-// TODO: Add unit test coverage.
+import org.apache.log4j.Logger;
+
 public class ServletUtils {
+   
+   private static Logger LOGGER = Logger.getLogger(ServletUtils.class);
    
    public static Map<String, String> getPostParameters(HttpServletRequest request) {
       // Include any query string 
@@ -54,7 +57,7 @@ public class ServletUtils {
             rd.close();
          }
       } catch (IOException ioe) {
-         // TODO: Log this.
+         LOGGER.warn("Failed to proccess POST request data: ", ioe);
       }
       
       return rawParameterString;
@@ -77,7 +80,7 @@ public class ServletUtils {
                   paramMap.put(key, "");
                }
             } catch(UnsupportedEncodingException uee) {
-               // TODO: Log this.
+               LOGGER.warn("Unsupported encoding for input parameter: " + param, uee);
             }
          }
       }

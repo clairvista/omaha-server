@@ -37,6 +37,10 @@ public class Request {
    private User user;
 
    @ManyToOne
+   @JoinColumn(name="operating_system_id")
+   private OperatingSystem operatingSystem;
+
+   @ManyToOne
    @JoinColumn(name="session_id")
    private Session session;
 
@@ -99,6 +103,14 @@ public class Request {
 
    public void setUser(User user) {
       this.user = user;
+   }
+
+   public OperatingSystem getOperatingSystem() {
+      return operatingSystem;
+   }
+
+   public void setOperatingSystem(OperatingSystem operatingSystem) {
+      this.operatingSystem = operatingSystem;
    }
 
    public Session getSession() {

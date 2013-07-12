@@ -26,8 +26,8 @@ public class ProtocolDAOImpl implements ProtocolDAO {
    }
 
    @SuppressWarnings("unchecked")
-   public Protocol getProtocol(String protocolID) {
-      Query query = getCurrentSession().createQuery("from Protocol where protocolID = :protocolID");
+   public Protocol findProtocol(String protocolID) {
+      Query query = getCurrentSession().createQuery("FROM Protocol WHERE protocolID = :protocolID");
       query.setString("protocolID", protocolID);
       List<Protocol> protocols = query.list();
       
@@ -41,7 +41,7 @@ public class ProtocolDAOImpl implements ProtocolDAO {
 
    @SuppressWarnings("unchecked")
    public List<Protocol> getProtocols() {
-      return getCurrentSession().createQuery("from Protocol").list();
+      return getCurrentSession().createQuery("FROM Protocol").list();
    }
 
 }

@@ -27,8 +27,8 @@ public class UpdateCheckDAOImpl implements UpdateCheckDAO {
       UpdateCheck updateCheckToUpdate = getUpdateCheck(updateCheck.getId());
 
       if (updateCheckToUpdate != null) {
-         updateCheckToUpdate.setApplicationVersion(updateCheck.getApplicationVersion());
-         updateCheckToUpdate.setRequest(updateCheck.getRequest());
+         updateCheckToUpdate.setApplicationVersionRequest(updateCheck.getApplicationVersionRequest());
+         updateCheckToUpdate.setAccessToken(updateCheck.getAccessToken());
          updateCheckToUpdate.setUpdateDisabled(updateCheck.getUpdateDisabled());
          updateCheckToUpdate.setTargetVersionPrefix(updateCheck.getTargetVersionPrefix());
          updateCheckToUpdate.setCreatedTime(updateCheck.getCreatedTime());

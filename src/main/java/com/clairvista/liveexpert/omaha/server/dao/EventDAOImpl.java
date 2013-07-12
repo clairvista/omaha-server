@@ -27,8 +27,7 @@ public class EventDAOImpl implements EventDAO {
       Event eventToUpdate = getEvent(event.getId());
 
       if (eventToUpdate != null) {
-         eventToUpdate.setApplicationVersion(event.getApplicationVersion());
-         eventToUpdate.setRequest(event.getRequest());
+         eventToUpdate.setApplicationVersionRequest(event.getApplicationVersionRequest());
          eventToUpdate.setEventType(event.getEventType());
          eventToUpdate.setEventResult(event.getEventResult());
          eventToUpdate.setErrorCode(event.getErrorCode());
@@ -43,6 +42,7 @@ public class EventDAOImpl implements EventDAO {
          eventToUpdate.setTimeSinceUpdateAvailable(event.getTimeSinceUpdateAvailable());
          eventToUpdate.setTimeSinceDownloadStart(event.getTimeSinceDownloadStart());
          eventToUpdate.setCreatedTime(event.getCreatedTime());
+         
          getCurrentSession().update(eventToUpdate);
       }
    }
