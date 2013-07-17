@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name="requests")
 public class Request {
@@ -30,6 +32,7 @@ public class Request {
    private ClientVersion clientVersion;
    
    @Column(name="is_machine")
+   @Type(type="org.hibernate.type.NumericBooleanType")
    private Boolean isMachine;
 
    @ManyToOne

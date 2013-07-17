@@ -1,10 +1,10 @@
 package com.clairvista.liveexpert.omaha.server.test.integration;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.hibernate.SessionFactory;
 import org.junit.Before;
@@ -31,13 +31,12 @@ import com.clairvista.liveexpert.omaha.server.model.ApplicationVersionRequest;
 import com.clairvista.liveexpert.omaha.server.model.Event;
 import com.clairvista.liveexpert.omaha.server.model.OperatingSystem;
 import com.clairvista.liveexpert.omaha.server.model.Ping;
-import com.clairvista.liveexpert.omaha.server.model.Protocol;
 import com.clairvista.liveexpert.omaha.server.model.Request;
 import com.clairvista.liveexpert.omaha.server.model.UpdateCheck;
 import com.clairvista.liveexpert.omaha.server.test.util.TestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/main/webapp/WEB-INF/servlet-context.xml"})
+@ContextConfiguration(locations={"file:src/test/resources/test-servlet-context.xml"})
 @WebAppConfiguration
 @Transactional
 @SuppressWarnings("unchecked")
@@ -73,45 +72,6 @@ public class UpdateServletTest {
             "N2VhZGRjYmNjYTFhNjU3OTcyMjU3OWE4YThhNDA3ZWI2NTA4M2ZiYyAgcG9tLnhtbAo=", 
             23963192, TestUtils.TEST_CREATOR_NAME);
       TestUtils.populateTestData(testAppVersion2, session);
-      
-//      Map<String,String[]> initApps = new HashMap<String, String[]>();
-//      initApps.put("{430FD4D0-B729-4F61-AA34-91526481799D}", new String[] {"1.3.23.0", "www.test-download.com", "test-app-1", "VXriGUVI0TNqfLlU02vBel4Q3Zo=", "23963192"});
-//      initApps.put("{D0AB2EBC-931B-4013-9FEB-C9C4C2225C8C}", new String[] {"2.2.2.0", "www.test-download.com", "test-app-2", "N2VhZGRjYmNjYTFhNjU3OTcyMjU3OWE4YThhNDA3ZWI2NTA4M2ZiYyAgcG9tLnhtbAo=", "38303482"});
-//      
-//      
-//      for(String appID : initApps.keySet()) {
-//         String[] appDetails = initApps.get(appID);
-//         List<Application> applications = session.createQuery("FROM Application WHERE appID = :appID")
-//               .setString("appID", appID)
-//               .list();
-//         Application app;
-//         if(applications.isEmpty()) {
-//            app = new Application();
-//            app.setAppID(appID);
-//            app.setName(appDetails[2]);
-//            app.setDescription("Test Application");
-//            app.setCreatedBy(TestUtils.TEST_CREATOR_NAME);
-//            session.save(app);
-//         } else {
-//            app = applications.get(0);
-//         }
-//         
-//         List<ApplicationVersion> appVersions = session.createQuery("FROM ApplicationVersion WHERE application = :applicationID AND versionID = :versionID")
-//               .setInteger("applicationID", app.getId())
-//               .setString("versionID", appDetails[0])
-//               .list();
-//         if(appVersions.isEmpty()) {
-//            ApplicationVersion appVersion = new ApplicationVersion();
-//            appVersion.setApplication(app);
-//            appVersion.setVersionID(appDetails[0]);
-//            appVersion.setDownloadBaseURL(appDetails[1]);
-//            appVersion.setInstallerName(appDetails[2]);
-//            appVersion.setInstallerHash(appDetails[3]);
-//            appVersion.setInstallerSize(Integer.parseInt(appDetails[4]));
-//            appVersion.setCreatedBy(TestUtils.TEST_CREATOR_NAME);
-//            session.save(appVersion);
-//         }
-//      }
    }
    
    // TODO: Split this up. Validate indivudual components.

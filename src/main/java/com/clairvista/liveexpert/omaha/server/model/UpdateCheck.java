@@ -10,6 +10,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.annotations.Type;
+
 @Entity
 @Table(name="update_checks")
 public class UpdateCheck {
@@ -26,6 +28,7 @@ public class UpdateCheck {
    private String accessToken;
 
    @Column(name="update_disabled")
+   @Type(type="org.hibernate.type.NumericBooleanType")
    private Boolean updateDisabled;
 
    @Column(name="target_version_prefix")

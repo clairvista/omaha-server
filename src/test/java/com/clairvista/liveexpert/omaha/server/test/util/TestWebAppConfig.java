@@ -20,17 +20,28 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @ComponentScan("com.clairvista.liveexpert.omaha.server")
 @EnableWebMvc
 @EnableTransactionManagement
-@PropertySource("classpath:test.properties")
+@PropertySource("file:src/test/resources/test.properties")
+@SuppressWarnings("unused")
 public class TestWebAppConfig {
 
+   // NOTE: My tests were getting the wrong environment variables, so hard-coding these values
+   //       was the most robust fix.
+   // TODO: Find a way to prevent WebAppConfig from loading.
    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
+   private static final String DATABASE_DRIVER = "org.hsqldb.jdbcDriver";
    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";
+   private static final String DATABASE_URL = "jdbc:hsqldb:mem:butterfly";
    private static final String PROPERTY_NAME_DATABASE_USERNAME = "db.username";
+   private static final String DATABASE_USERNAME = "sa";
    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
+   private static final String DATABASE_PASSWORD = "";
       
    private static final String PROPERTY_NAME_HIBERNATE_DIALECT = "hibernate.dialect";
+   private static final String HIBERNATE_DIALECT = "org.hibernate.dialect.HSQLDialect";
    private static final String PROPERTY_NAME_HIBERNATE_SHOW_SQL = "hibernate.show_sql";
+   private static final String HIBERNATE_SHOW_SQL = "true";
    private static final String PROPERTY_NAME_HIBERNATE_AUTO_ACTION = "hibernate.hbm2ddl.auto";
+   private static final String HIBERNATE_AUTO_ACTION = "create";
    private static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "entitymanager.packages.to.scan";
     
    @Resource
@@ -40,10 +51,10 @@ public class TestWebAppConfig {
    public DataSource dataSource() {
       DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-      dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
-      dataSource.setUrl(env.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
-      dataSource.setUsername(env.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
-      dataSource.setPassword(env.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
+      dataSource.setDriverClassName(DATABASE_DRIVER);
+      dataSource.setUrl(DATABASE_URL);
+      dataSource.setUsername(DATABASE_USERNAME);
+      dataSource.setPassword(DATABASE_PASSWORD);
       
       return dataSource;
    }
@@ -60,10 +71,9 @@ public class TestWebAppConfig {
    private Properties hibProperties() {
       Properties properties = new Properties();
 
-      properties.put(PROPERTY_NAME_HIBERNATE_AUTO_ACTION, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_AUTO_ACTION));
-      properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
-      properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
-      properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
+      properties.put(PROPERTY_NAME_HIBERNATE_AUTO_ACTION, HIBERNATE_AUTO_ACTION);
+      properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, HIBERNATE_DIALECT);
+      properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, HIBERNATE_SHOW_SQL);
       
       return properties;   
    }

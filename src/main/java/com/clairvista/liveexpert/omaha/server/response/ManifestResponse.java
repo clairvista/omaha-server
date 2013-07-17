@@ -14,6 +14,9 @@ public class ManifestResponse {
    
    public ManifestResponse(String version) {
       this.version = version;
+      
+      this.packages = new PackagesResponse();
+      this.actions = new ActionsResponse();
    }
    
    public void addPackage(PackageResponse packageResponse) {

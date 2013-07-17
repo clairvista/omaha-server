@@ -34,7 +34,7 @@ public class Event {
    @Column(name="extra_code")
    private Integer extraCode;
    
-   @Column(name="updateCheckTime")
+   @Column(name="update_check_time_ms")
    private Integer updateCheckTime;
 
    @Column(name="download_time_ms")

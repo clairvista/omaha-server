@@ -31,6 +31,7 @@ import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 public class UpdateCheckServiceImpl implements UpdateCheckService {
 
    private static Logger LOGGER = Logger.getLogger(UpdateCheckServiceImpl.class);
+   private static final int RESOURCE_PRESENCE_CHECK_TIMEOUT = 1000;
 
    @Autowired
    private UpdateCheckDAO updateCheckDAO;
@@ -138,10 +139,11 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
    private boolean isResourcePresent(String downloadURL) {
       try {
          HttpURLConnection.setFollowRedirects(false);
-         HttpURLConnection con =
+         HttpURLConnection conn =
             (HttpURLConnection) new URL(downloadURL).openConnection();
-         con.setRequestMethod("HEAD");
-         return (con.getResponseCode() == HttpURLConnection.HTTP_OK);
+         conn.setConnectTimeout(RESOURCE_PRESENCE_CHECK_TIMEOUT);
+         conn.setRequestMethod("HEAD");
+         return (conn.getResponseCode() == HttpURLConnection.HTTP_OK);
        } catch (MalformedURLException mue) {
           LOGGER.error("Download URL was not valid: " + downloadURL, mue);
        } catch (IOException ioe) {

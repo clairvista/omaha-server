@@ -125,7 +125,7 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
                      AND table_schema = 'leomaha') THEN
       CREATE TABLE leomaha.protocols
            ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-             name VARCHAR(255) NOT NULL UNIQUE,
+             protocol_id VARCHAR(255) NOT NULL UNIQUE,
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
              created_by VARCHAR(255) NOT NULL,
              PRIMARY KEY(id) );

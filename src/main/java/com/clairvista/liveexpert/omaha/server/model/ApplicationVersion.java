@@ -18,7 +18,7 @@ public class ApplicationVersion {
    @GeneratedValue
    private Integer id;
 
-   @Column(name="versionID")
+   @Column(name="version_id")
    private String versionID;
 
    @ManyToOne
