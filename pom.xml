@@ -65,6 +65,7 @@
           <groupId>javax.servlet</groupId>
           <artifactId>servlet-api</artifactId>
           <version>${servlet.api.version}</version>
+          <scope>provided</scope> <!-- The application server must provide this. -->
       </dependency>
       
       <!-- DB related dependencies -->

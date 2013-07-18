@@ -117,11 +117,14 @@ public class RequestServiceImpl implements RequestService {
          LOGGER.error("Failed to find or create session with ID: " + sessionID);
          return null;
       }
-
-      User user = userDAO.findOrCreateUser(userID);
-      if(user == null) {
-         LOGGER.error("Failed to find or create user with ID: " + userID);
-         return null;
+      
+      User user = null;
+      if(userID != null) {
+         user = userDAO.findOrCreateUser(userID);
+         if(user == null) {
+            LOGGER.error("Failed to find or create user with ID: " + userID);
+            return null;
+         }
       }
       
       // Create Request:

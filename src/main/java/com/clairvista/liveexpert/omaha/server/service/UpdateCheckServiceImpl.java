@@ -123,6 +123,7 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
          ActionResponse action = new ActionResponse();
          action.setEvent(ActionAttrs.INSTALL_EVENT);
          manifest.addAction(action);
+         response.setManifest(manifest);
       } else {
          LOGGER.error("Installer was not found at the expected location.");
          response.setStatus("error-internal");

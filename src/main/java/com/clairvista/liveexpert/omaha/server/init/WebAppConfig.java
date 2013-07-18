@@ -23,6 +23,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 @PropertySource("classpath:application.properties")
 public class WebAppConfig {
 
+   // These can be overriden by setting JAVA_OPTS for them.
    private static final String PROPERTY_NAME_DATABASE_DRIVER = "db.driver";
    private static final String PROPERTY_NAME_DATABASE_PASSWORD = "db.password";
    private static final String PROPERTY_NAME_DATABASE_URL = "db.url";

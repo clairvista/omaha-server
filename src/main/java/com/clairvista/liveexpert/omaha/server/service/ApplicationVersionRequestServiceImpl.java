@@ -27,7 +27,7 @@ import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 public class ApplicationVersionRequestServiceImpl implements ApplicationVersionRequestService {
 
    private static final String[] REQUIRED_APPLICATION_ATTRIBUTES = new String[]
-         { ApplicationAttrs.LANGUAGE, ApplicationAttrs.BRAND };
+         { ApplicationAttrs.LANGUAGE };
    
    private static Logger LOGGER = Logger.getLogger(ApplicationVersionRequestServiceImpl.class);
 

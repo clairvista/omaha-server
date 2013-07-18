@@ -81,33 +81,6 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
    
    IF NOT EXISTS (SELECT 1
                     FROM information_schema.tables
-                   WHERE table_name = 'updates'
-                     AND table_schema = 'leomaha') THEN
-      CREATE TABLE leomaha.updates
-           ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
-             user_id INT UNSIGNED NOT NULL,
-             source_version_id INT UNSIGNED,
-             target_version_id INT UNSIGNED NOT NULL,
-             language VARCHAR(255)NOT NULL,
-             brand VARCHAR(255)NOT NULL,
-             additional_params VARCHAR(255)NOT NULL,
-             experiments VARCHAR(255)NOT NULL,
-             created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-             PRIMARY KEY(id) );
-             
-       ALTER TABLE leomaha.updates
-           ADD FOREIGN KEY (source_version_id)
-           REFERENCES leomaha.application_versions(id);
-             
-       ALTER TABLE leomaha.updates
-           ADD FOREIGN KEY (target_version_id)
-           REFERENCES leomaha.application_versions(id);
-   ELSE
-      SELECT 'Updates table already exists.' AS 'warning';
-   END IF;
-   
-   IF NOT EXISTS (SELECT 1
-                    FROM information_schema.tables
                    WHERE table_name = 'sessions'
                      AND table_schema = 'leomaha') THEN
       CREATE TABLE leomaha.sessions
@@ -185,7 +158,7 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
              request_id INT UNSIGNED NOT NULL,
              next_version VARCHAR(255),
              language VARCHAR(255) NOT NULL,
-             brand VARCHAR(255) NOT NULL,
+             brand VARCHAR(255),
              client VARCHAR(255),
              additional_params VARCHAR(255),
              experiments VARCHAR(255),
