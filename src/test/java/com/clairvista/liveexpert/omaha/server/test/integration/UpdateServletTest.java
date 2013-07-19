@@ -109,6 +109,8 @@ public class UpdateServletTest {
       
       Element responseElem = TestUtils.extractResponseXML(result);
       
+      assertEquals("UTF-8 document returned.", "UTF-8", responseElem.getOwnerDocument().getXmlEncoding());
+      
       assertEquals("Protocol used is 3.0.", "3.0", responseElem.getAttribute("protocol"));
       assertEquals("Server specifies it's type.","todo", responseElem.getAttribute("server"));
       // TODO: Assert daystart response

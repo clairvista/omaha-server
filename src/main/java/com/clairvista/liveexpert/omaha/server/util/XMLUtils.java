@@ -1,5 +1,6 @@
 package com.clairvista.liveexpert.omaha.server.util;
 
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -7,6 +8,7 @@ import org.apache.log4j.Logger;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.ls.DOMImplementationLS;
+import org.w3c.dom.ls.LSOutput;
 import org.w3c.dom.ls.LSSerializer;
 
 public class XMLUtils {
@@ -60,7 +62,16 @@ public class XMLUtils {
       Document document = element.getOwnerDocument();
       DOMImplementationLS domImplLS = (DOMImplementationLS) document.getImplementation();
       LSSerializer serializer = domImplLS.createLSSerializer();
-      return serializer.writeToString(element);
+
+      // Client assumes/requires UTF-8 response.
+      LSOutput lsOutput = domImplLS.createLSOutput();
+      lsOutput.setEncoding("UTF-8");
+
+      StringWriter stringWriter = new StringWriter();
+      lsOutput.setCharacterStream(stringWriter);
+      serializer.write(element, lsOutput);
+      
+      return stringWriter.toString();
    }
 
    public static String documentToString(Document doc) {
