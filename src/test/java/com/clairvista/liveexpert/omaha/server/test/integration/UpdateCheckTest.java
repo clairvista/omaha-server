@@ -20,6 +20,9 @@ import org.w3c.dom.Element;
 
 import com.clairvista.liveexpert.omaha.server.model.Application;
 import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
+import com.clairvista.liveexpert.omaha.server.model.ApplicationVersionRequest;
+import com.clairvista.liveexpert.omaha.server.model.Request;
+import com.clairvista.liveexpert.omaha.server.model.UpdateCheck;
 import com.clairvista.liveexpert.omaha.server.test.util.TestUtils;
 import com.clairvista.liveexpert.omaha.server.test.util.TestWebAppConfig;
 
@@ -72,7 +75,7 @@ public class UpdateCheckTest {
       Element responseElem = TestUtils.submitTestRequest(testRequestContent, this.appContext);
       
       List<Element> appElems = DomUtils.getChildElementsByTagName(responseElem, "app");
-      assertEquals("Two app elements returned.", 1, appElems.size());
+      assertEquals(1, appElems.size());
 
       Element appElem = appElems.get(0);
       List<Element> actionElems;
@@ -114,6 +117,41 @@ public class UpdateCheckTest {
       assertEquals("First action is an update check.", "updatecheck", actionElem.getNodeName());
       // TODO: HTTP requests are not currently being stubbed.
       //assertEquals("Update Check status is ok.", "ok", actionElem.getAttribute("status"));
+   }
+   
+   @SuppressWarnings("unchecked")
+   @Test
+   public void updateDataCaptureTest() throws Exception {
+      StringBuilder testRequestContent = new StringBuilder();
+      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
+            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
+      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("    <updatecheck/>");
+      testRequestContent.append("  </app>");
+      testRequestContent.append("</request>");
+
+      List<Request> preRequests = session.createQuery("FROM Request").list();
+      
+      TestUtils.submitTestRequest(testRequestContent, this.appContext);
+
+      List<Request> postRequests = session.createQuery("FROM Request").list();
+      assertEquals(preRequests.size() + 1, postRequests.size());
+      
+      Request omahaRequest = postRequests.get(postRequests.size() - 1);
+      List<ApplicationVersionRequest> appRequests = session.createQuery(
+            "FROM ApplicationVersionRequest WHERE request = :requestID")
+            .setInteger("requestID", omahaRequest.getId())
+            .list();
+      assertEquals(1, appRequests.size());
+      
+      ApplicationVersionRequest appRequest = appRequests.get(0);
+      List<UpdateCheck> updateChecks = session.createQuery(
+            "FROM UpdateCheck WHERE applicationVersionRequest = :appRequestID")
+            .setInteger("appRequestID", appRequest.getId())
+            .list();
+      assertEquals(1, updateChecks.size());
    }
    
    // TODO: Add test to verify that the session, user, and client version are not created if one already exists. 

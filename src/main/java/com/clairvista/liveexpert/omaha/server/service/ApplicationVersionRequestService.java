@@ -8,12 +8,13 @@ import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
 import com.clairvista.liveexpert.omaha.server.model.ApplicationVersionRequest;
 import com.clairvista.liveexpert.omaha.server.model.Request;
 import com.clairvista.liveexpert.omaha.server.response.ApplicationResponse;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 
 public interface ApplicationVersionRequestService {
 
-   public boolean validateApplicationVersionRequest(Element appElem);
+   public boolean validateApplicationVersionRequest(Element appElem) throws RequestElementValidationException;
    public ApplicationVersionRequest recordApplicationVersionRequest(Request request, 
-         ApplicationVersion appVersion, Element appElem);
+         ApplicationVersion appVersion, Element appElem) throws RequestElementValidationException;
    public ApplicationResponse processApplicationVersionRequest(ApplicationVersionRequest appRequest, 
          List<Element> actionElems);
 

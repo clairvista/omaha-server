@@ -17,6 +17,7 @@ import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
 import com.clairvista.liveexpert.omaha.server.model.ApplicationVersionRequest;
 import com.clairvista.liveexpert.omaha.server.model.Request;
 import com.clairvista.liveexpert.omaha.server.response.ApplicationResponse;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 
 @Service
@@ -68,20 +69,25 @@ public class ApplicationServiceImpl implements ApplicationService {
 
       // Lookup Application Version:
       ApplicationVersion appVersion = lookupApplicationVersion(app, appElem);
+      if(appVersion == null) {
+         LOGGER.warn("Version not found for application. Application content: " + XMLUtils.elementToString(appElem));
+         appResponse.setStatus("error-unknownVersion");
+         return appResponse;
+      }
 
       // Create Application Version Request:
-      ApplicationVersionRequest appRequest = 
-            applicationVersionRequestService.recordApplicationVersionRequest(request, appVersion, appElem);
+      ApplicationVersionRequest appRequest = null;
+      try {
+         appRequest = applicationVersionRequestService.recordApplicationVersionRequest(request, appVersion, appElem);
+      } catch(RequestElementValidationException reve) {
+         appResponse.setStatus("error-validationFailure");
+         appResponse.setErrorDetails(reve.getResponseErrorDetails());
+         return appResponse;
+      }
       if(appRequest == null) {
          LOGGER.warn("Failed to record application request." +
                " Full application content: " + XMLUtils.elementToString(appElem));
          appResponse.setStatus("error-serverFailure");
-         return appResponse;
-      }
-
-      if(appVersion == null) {
-         LOGGER.warn("Version not found for application. Application content: " + XMLUtils.elementToString(appElem));
-         appResponse.setStatus("error-unknownVersion");
          return appResponse;
       }
 

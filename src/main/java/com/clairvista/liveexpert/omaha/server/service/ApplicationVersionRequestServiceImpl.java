@@ -2,6 +2,7 @@ package com.clairvista.liveexpert.omaha.server.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -20,6 +21,7 @@ import com.clairvista.liveexpert.omaha.server.response.ApplicationResponse;
 import com.clairvista.liveexpert.omaha.server.response.EventResponse;
 import com.clairvista.liveexpert.omaha.server.response.PingResponse;
 import com.clairvista.liveexpert.omaha.server.response.UnknownResponse;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 
 @Service
@@ -43,19 +45,20 @@ public class ApplicationVersionRequestServiceImpl implements ApplicationVersionR
    @Autowired
    private UpdateCheckService updateCheckService;
    
-   public boolean validateApplicationVersionRequest(Element appElem) {
+   public boolean validateApplicationVersionRequest(Element appElem) throws RequestElementValidationException {
       List<String> missingAttributes = XMLUtils.validateRequiredAttributes(appElem, REQUIRED_APPLICATION_ATTRIBUTES);
       if(!missingAttributes.isEmpty()) {
          LOGGER.warn("INVALID REQUEST -- Missing required application attributes. " +
                "Missing attributes: " + missingAttributes);
-         return false;
+         throw new RequestElementValidationException("Missing required attributes: " + missingAttributes,
+               "missing:" + StringUtils.join(missingAttributes, ","));
       }
       
       return true;
    }
 
    public ApplicationVersionRequest recordApplicationVersionRequest(Request request,
-         ApplicationVersion appVersion, Element appElem) {
+         ApplicationVersion appVersion, Element appElem) throws RequestElementValidationException {
       // Validate Inputs:
       if(!validateApplicationVersionRequest(appElem)) {
          return null;
@@ -103,7 +106,7 @@ public class ApplicationVersionRequestServiceImpl implements ApplicationVersionR
 
       // Validate Request:
       if(actionElems.isEmpty()) {
-         response.setStatus("error-invalidAppId");
+         response.setStatus("error-noActionsRequested");
          return response;
       }
       
