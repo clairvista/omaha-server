@@ -4,7 +4,24 @@ Omaha Server README
 Purpose:
 -----------------
 
-The goal of this project is to provide a Java-based implementation of a Omaha compatible server. This server implements (most of) the Omaha 3.0 protocol, as described at https://code.google.com/p/omaha/wiki/ServerProtocol. 
+The goal of this project is to provide a Java-based implementation of 
+a Omaha compatible server. This server implements (most of) the Omaha 
+3.0 protocol, as described at 
+https://code.google.com/p/omaha/wiki/ServerProtocol. 
+
+
+Deployment Requirements
+-----------------
+
+The WAR build artifact can be deployed in an application server of your 
+choosing. The only inputs to the application itself are the following
+JAVA_OPTS:
+
+* db.driver: The classname of the database driver to be used by the application (e.g. com.mysql.jdbc.Driver)
+* db.url: The DB connection URL to be used by the application (e.g. jdbc:mysql://localhost:3306/leomaha)
+* db.username: The username with which the application should connect to the specified database (e.g. omahaDbUser)
+* db.password: The password corresponding to the specified user that the application should use to connect to the specified database (e.g. omahaPass)
+* hibernate.dialect: The classname of the Hibernate dialect that the application should use in communicating with the specified database (e.g. org.hibernate.dialect.MySQL5InnoDBDialect)
 
 
 Design Decisions:
