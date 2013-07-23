@@ -30,7 +30,7 @@ public class ResponseRoot {
       lastMidnight.set(Calendar.SECOND, 0);
       lastMidnight.set(Calendar.MILLISECOND, 0);
 
-      secondsSinceMidnight = now.getTimeInMillis() - lastMidnight.getTimeInMillis() ;
+      secondsSinceMidnight = (now.getTimeInMillis() - lastMidnight.getTimeInMillis()) / 1000;
    }
    
    public void addApplication(ApplicationResponse appResponse) {
