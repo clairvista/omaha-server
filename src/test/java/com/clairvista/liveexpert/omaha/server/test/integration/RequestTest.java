@@ -140,7 +140,7 @@ public class RequestTest {
 
       Element responseElem = TestUtils.submitTestRequest(testRequestContent, this.appContext);
 
-      assertEquals("todo", responseElem.getAttribute("server"));
+      assertEquals("testOmahaServer", responseElem.getAttribute("server"));
       assertEquals("3.0", responseElem.getAttribute("protocol"));
 
       List<Element> children = DomUtils.getChildElements(responseElem);
@@ -189,7 +189,7 @@ public class RequestTest {
       
       Element responseElem = TestUtils.submitTestRequest(testRequestContent, this.appContext);
 
-      assertEquals("todo", responseElem.getAttribute("server"));
+      assertEquals("testOmahaServer", responseElem.getAttribute("server"));
       assertEquals("3.0", responseElem.getAttribute("protocol"));
 
       List<Element> children = DomUtils.getChildElements(responseElem);

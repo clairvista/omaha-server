@@ -2,9 +2,12 @@ package com.clairvista.liveexpert.omaha.server.service;
 
 import java.util.List;
 
+import javax.annotation.Resource;
+
 import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.w3c.dom.Element;
@@ -37,8 +40,13 @@ public class RequestServiceImpl implements RequestService {
          { RequestAttrs.PROTOCOL, RequestAttrs.VERSION, RequestAttrs.IS_MACHINE, 
            RequestAttrs.REQUEST_ID, RequestAttrs.SESSION_ID };
 
+   private static final String PROPERTY_NAME_SERVER_KEY = "omaha.serverkey";
+
    private static Logger LOGGER = Logger.getLogger(RequestServiceImpl.class);
 
+   @Resource
+   private Environment env;
+   
    @Autowired
    private RequestDAO requestDAO;
 
@@ -156,7 +164,8 @@ public class RequestServiceImpl implements RequestService {
 
    public ResponseRoot processRequest(Request request, List<Element> appElems) {
       // Construct Response:
-      ResponseRoot response = new ResponseRoot("3.0", "todo");
+      String serverKey = env.getProperty(PROPERTY_NAME_SERVER_KEY);
+      ResponseRoot response = new ResponseRoot("3.0", serverKey);
       
       for(Element appElem : appElems) {
          // Lookup Application:

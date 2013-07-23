@@ -95,8 +95,8 @@ public class UpdateServletTest {
       assertEquals("response", responseElem.getNodeName());
       assertEquals("UTF-8 document returned.", "UTF-8", responseElem.getOwnerDocument().getXmlEncoding());
       
-      assertEquals("Protocol used is 3.0.", "3.0", responseElem.getAttribute("protocol"));
-      assertEquals("Server specifies it's type.","todo", responseElem.getAttribute("server"));
+      assertEquals("3.0", responseElem.getAttribute("protocol"));
+      assertEquals("testOmahaServer", responseElem.getAttribute("server"));
       // TODO: Assert daystart response
       
       List<Element> appElems = DomUtils.getChildElementsByTagName(responseElem, "app");

@@ -23,6 +23,10 @@ JAVA_OPTS:
 * db.password: The password corresponding to the specified user that the application should use to connect to the specified database (e.g. omahaPass)
 * hibernate.dialect: The classname of the Hibernate dialect that the application should use in communicating with the specified database (e.g. org.hibernate.dialect.MySQL5InnoDBDialect)
 
+The following are optional JAVA_OPTS:
+
+* omaha.serverkey: Specifies the value returned by this server in the response's server attribute (e.g. omahaServer)
+
 
 Design Decisions:
 -----------------
