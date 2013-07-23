@@ -80,12 +80,13 @@ public class ApplicationServiceImpl implements ApplicationService {
       try {
          appRequest = applicationVersionRequestService.recordApplicationVersionRequest(request, appVersion, appElem);
       } catch(RequestElementValidationException reve) {
+         LOGGER.warn("Request validation failure.", reve);
          appResponse.setStatus("error-validationFailure");
          appResponse.setErrorDetails(reve.getResponseErrorDetails());
          return appResponse;
       }
       if(appRequest == null) {
-         LOGGER.warn("Failed to record application request." +
+         LOGGER.error("Failed to record application request." +
                " Full application content: " + XMLUtils.elementToString(appElem));
          appResponse.setStatus("error-serverFailure");
          return appResponse;

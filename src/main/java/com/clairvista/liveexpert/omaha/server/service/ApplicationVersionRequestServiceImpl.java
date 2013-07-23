@@ -50,7 +50,7 @@ public class ApplicationVersionRequestServiceImpl implements ApplicationVersionR
       if(!missingAttributes.isEmpty()) {
          LOGGER.warn("INVALID REQUEST -- Missing required application attributes. " +
                "Missing attributes: " + missingAttributes);
-         throw new RequestElementValidationException("Missing required attributes: " + missingAttributes,
+         throw new RequestElementValidationException("Missing required Application attributes: " + missingAttributes,
                "missing:" + StringUtils.join(missingAttributes, ","));
       }
       
@@ -61,7 +61,8 @@ public class ApplicationVersionRequestServiceImpl implements ApplicationVersionR
          ApplicationVersion appVersion, Element appElem) throws RequestElementValidationException {
       // Validate Inputs:
       if(!validateApplicationVersionRequest(appElem)) {
-         return null;
+         throw new RequestElementValidationException("Application Version Request validation failed.",
+               "appValidationFailed");
       }
 
       // Extract Inputs:

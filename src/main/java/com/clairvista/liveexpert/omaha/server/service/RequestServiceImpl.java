@@ -2,6 +2,7 @@ package com.clairvista.liveexpert.omaha.server.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,6 +26,7 @@ import com.clairvista.liveexpert.omaha.server.model.Session;
 import com.clairvista.liveexpert.omaha.server.model.User;
 import com.clairvista.liveexpert.omaha.server.response.ApplicationResponse;
 import com.clairvista.liveexpert.omaha.server.response.ResponseRoot;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 
 @Service
@@ -58,33 +60,37 @@ public class RequestServiceImpl implements RequestService {
    @Autowired
    private ApplicationService applicationService;
    
-   public boolean validateRequest(Element requestElem) {
+   public boolean validateRequest(Element requestElem) throws RequestElementValidationException {
       if(!APIElementNames.REQUEST.equals(requestElem.getNodeName())) {
          LOGGER.warn("INVALID REQUEST -- Request not properly named. Name provided: " + requestElem);
-         return false;
+         throw new RequestElementValidationException("Improper request element name.", 
+               "invalidRequestElementName:" + requestElem.getNodeName());
       }
       
       List<String> missingAttributes = XMLUtils.validateRequiredAttributes(requestElem, REQUIRED_REQUEST_ATTRIBUTES);
       if(!missingAttributes.isEmpty()) {
          LOGGER.warn("INVALID REQUEST -- Missing required request attributes. " +
          		"Missing attributes: " + missingAttributes);
-         return false;
+         throw new RequestElementValidationException("Missing request attributes: " + missingAttributes, 
+               "missing:" + StringUtils.join(missingAttributes, ","));
       }
       
       String requestProtocol = XMLUtils.parseString(requestElem, RequestAttrs.PROTOCOL);
       if(requestProtocol == null || !"3.0".equals(requestProtocol)) {
          LOGGER.warn("INVALID REQUEST -- Unsupported request protocol. Protocol provided: " + requestProtocol);
-         return false;
+         throw new RequestElementValidationException("Unsupported protocol: " + requestProtocol, 
+               "unsupportedProtocol");
       }
       
       return true;
    }
 
    @SuppressWarnings("unused")
-   public Request recordRequest(Element requestElem) {
+   public Request recordRequest(Element requestElem) throws RequestElementValidationException {
       // Validate Inputs:
       if(!validateRequest(requestElem)) {
-         return null;
+         throw new RequestElementValidationException("Request validation failed.", 
+               "validationFailed");
       }
       
       // Extract Inputs:
@@ -103,19 +109,22 @@ public class RequestServiceImpl implements RequestService {
       Protocol protocol = protocolDAO.findProtocol(protocolID);
       if(protocol == null) {
          LOGGER.error("Failed to find protocol with ID: " + protocolID);
-         return null;
+         throw new RequestElementValidationException("Unable to find protocol: " + protocolID, 
+               "unknownProtocol");
       }
 
       ClientVersion clientVersion = clientVersionDAO.findOrCreateClientVersion(clientVersionID);
       if(clientVersion == null) {
          LOGGER.error("Failed to find or create client version with ID: " + clientVersionID);
-         return null;
+         throw new RequestElementValidationException("Unable to find or create client version: " + clientVersionID, 
+               "serverError");
       }
 
       Session session = sessionDAO.findOrCreateSession(sessionID);
       if(session == null) {
          LOGGER.error("Failed to find or create session with ID: " + sessionID);
-         return null;
+         throw new RequestElementValidationException("Unable to find or create session: " + sessionID, 
+               "serverError");
       }
       
       User user = null;
@@ -123,7 +132,8 @@ public class RequestServiceImpl implements RequestService {
          user = userDAO.findOrCreateUser(userID);
          if(user == null) {
             LOGGER.error("Failed to find or create user with ID: " + userID);
-            return null;
+            throw new RequestElementValidationException("Unable to find or create user: " + userID, 
+                  "serverError");
          }
       }
       

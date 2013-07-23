@@ -62,23 +62,31 @@ public class TestUtils {
          session.save(testAppVersion);
       }
    }
-
-   public static Element submitTestRequest(StringBuilder testRequestContent, 
+   
+   public static MvcResult submitTestRequestWithRawResponse(StringBuilder testRequestContent, 
          WebApplicationContext appContext) throws Exception {
+
       MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(appContext).build();
 
       MockHttpServletRequestBuilder httpRequest = MockMvcRequestBuilders.post("/update").content(testRequestContent.toString());
-      MvcResult result = mockMvc.perform(httpRequest)
+      return mockMvc.perform(httpRequest)
             .andExpect(MockMvcResultMatchers.status().isOk())
             .andReturn();
+   }
 
-      return TestUtils.extractResponseXML(result);
+   public static Element submitTestRequest(StringBuilder testRequestContent, 
+         WebApplicationContext appContext) throws Exception {
+      MvcResult result = submitTestRequestWithRawResponse(testRequestContent, appContext);
+      String responseContent = extractResponseContent(result);
+      return parseAsXML(responseContent);
    }
    
-   public static Element extractResponseXML(MvcResult result) throws Exception {
+   public static String extractResponseContent(MvcResult result) throws Exception {
       MockHttpServletResponse response = result.getResponse();
-      String responseContent = response.getContentAsString();
+      return response.getContentAsString();
+   }
 
+   public static Element parseAsXML(String responseContent) throws Exception {
       DocumentBuilderFactory docBuilderFactory = DocumentBuilderFactory.newInstance();
       DocumentBuilder docBuilder = docBuilderFactory.newDocumentBuilder();
       InputSource postInput = new InputSource(new StringReader(responseContent));

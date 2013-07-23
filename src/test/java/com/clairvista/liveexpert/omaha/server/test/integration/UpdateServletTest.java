@@ -99,16 +99,10 @@ public class UpdateServletTest {
       testInput.append("  </app>");
       testInput.append("</request>");
 
-      MockHttpServletRequestBuilder httpRequest = MockMvcRequestBuilders.post("/update").content(testInput.toString());
-      MvcResult result = this.mockMvc.perform(httpRequest)
-            .andExpect(MockMvcResultMatchers.status().isOk())
-            .andReturn();
-
+      Element responseElem = TestUtils.submitTestRequest(testInput, appContext);
 
       // Validate Response:
-      
-      Element responseElem = TestUtils.extractResponseXML(result);
-      
+      assertEquals("response", responseElem.getNodeName());
       assertEquals("UTF-8 document returned.", "UTF-8", responseElem.getOwnerDocument().getXmlEncoding());
       
       assertEquals("Protocol used is 3.0.", "3.0", responseElem.getAttribute("protocol"));

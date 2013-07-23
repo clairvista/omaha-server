@@ -10,7 +10,7 @@ public interface APIElementNames {
    public static final String EVENT = "event";
    public static final String UNKNOWN = "unknown";
 
-   public static final String RESPONSE = "request";
+   public static final String RESPONSE = "response";
    public static final String DAY_START = "daystart";
    public static final String URLS = "urls";
    public static final String URL = "url";

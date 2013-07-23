@@ -28,6 +28,7 @@ import com.clairvista.liveexpert.omaha.server.model.Request;
 import com.clairvista.liveexpert.omaha.server.response.ResponseRoot;
 import com.clairvista.liveexpert.omaha.server.service.OperatingSystemService;
 import com.clairvista.liveexpert.omaha.server.service.RequestService;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 import com.clairvista.liveexpert.omaha.server.util.ServletUtils;
 import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 
@@ -69,13 +70,18 @@ public class UpdateServlet {
       Document doc = createXmlDoc(postString, docBuilder);
       if(doc == null) {
          httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-         return "invalidRequest";
+         return "invalidRequest-failedToParse";
       }
 
       // Record request.
       Element requestElem = doc.getDocumentElement();
-      Request omahaRequest = requestService.recordRequest(requestElem);
-
+      Request omahaRequest = null;
+      try {
+         omahaRequest = requestService.recordRequest(requestElem);
+      } catch(RequestElementValidationException reve) {
+         LOGGER.error("Failed to record request.", reve);
+         return "invalidRequest-" + reve.getResponseErrorDetails();
+      }
       if(omahaRequest == null) {
          LOGGER.warn("Request creation failed for input: " + postString);
          httpResponse.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -92,6 +98,8 @@ public class UpdateServlet {
       } else if(!operatingSystemElems.isEmpty()) {
          Element operatingSystemNode = operatingSystemElems.get(0);
          operatingSystemService.recordOperatingSystem(omahaRequest, operatingSystemNode); 
+      } else {
+         LOGGER.warn("No operating system node provided with request.");
       }
       
       // Process application directives.
