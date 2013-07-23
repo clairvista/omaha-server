@@ -50,7 +50,7 @@ public class RequestTest {
       
       Application testApp = new Application("Test Application", "Test Application Description", 
             "{test-app-1234}", TestUtils.TEST_CREATOR_NAME);
-      ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp, "1.2.3.4", 
+      ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp, "0.0.0.0", 
             "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1234=", 
             1234, TestUtils.TEST_CREATOR_NAME);
       TestUtils.populateTestData(testAppVersion1, session);
@@ -63,7 +63,7 @@ public class RequestTest {
       testRequestContent.append("<request protocol=\"foo\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
       testRequestContent.append("    <updatecheck/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
@@ -76,7 +76,24 @@ public class RequestTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   public void invalidProtocolDataCaptureTest() throws Exception {      
+   public void invalidProtocolDataCaptureTest() throws Exception {
+      StringBuilder testRequestContent = new StringBuilder();
+      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      testRequestContent.append("<request protocol=\"foo\" version=\"1.0.0.0\" ismachine=\"1\" " +
+            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
+      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
+      testRequestContent.append("    <updatecheck/>");
+      testRequestContent.append("  </app>");
+      testRequestContent.append("</request>"); 
+
+      List<Request> preRequests = session.createQuery("FROM Request").list();
+      
+      TestUtils.submitTestRequestWithRawResponse(testRequestContent, this.appContext);
+
+      List<Request> postRequests = session.createQuery("FROM Request").list();
+      // NOTE: No request is recorded.
+      assertEquals(preRequests.size(), postRequests.size());
    }
    
    @Test
@@ -85,7 +102,7 @@ public class RequestTest {
       testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       testRequestContent.append("<request protocol=\"3.0\" sessionid=\"{session-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
       testRequestContent.append("    <updatecheck/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
@@ -98,16 +115,69 @@ public class RequestTest {
 
    @SuppressWarnings("unchecked")
    @Test
-   public void missingAttrDataCaptureTest() throws Exception {      
+   public void missingAttrDataCaptureTest() throws Exception {
+      StringBuilder testRequestContent = new StringBuilder();
+      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      testRequestContent.append("<request protocol=\"3.0\" sessionid=\"{session-1234}\">");
+      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
+      testRequestContent.append("    <updatecheck/>");
+      testRequestContent.append("  </app>");
+      testRequestContent.append("</request>");
+
+      List<Request> preRequests = session.createQuery("FROM Request").list();
+      
+      TestUtils.submitTestRequestWithRawResponse(testRequestContent, this.appContext);
+
+      List<Request> postRequests = session.createQuery("FROM Request").list();
+      // NOTE: No request is recorded.
+      assertEquals(preRequests.size(), postRequests.size());
    }
    
    @Test
-   public void noAppsResponseTest() throws Exception {      
+   public void noAppsResponseTest() throws Exception {
+      StringBuilder testRequestContent = new StringBuilder();
+      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
+            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
+      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("</request>");
+
+      Element responseElem = TestUtils.submitTestRequest(testRequestContent, this.appContext);
+
+      assertEquals("todo", responseElem.getAttribute("server"));
+      assertEquals("3.0", responseElem.getAttribute("protocol"));
+
+      List<Element> children = DomUtils.getChildElements(responseElem);
+      assertEquals(1, children.size());  // One for the daystart
    }
 
    @SuppressWarnings("unchecked")
    @Test
-   public void noAppsDataCaptureTest() throws Exception {      
+   public void noAppsDataCaptureTest() throws Exception {
+      StringBuilder testRequestContent = new StringBuilder();
+      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
+            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
+      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("</request>");
+
+      List<Request> preRequests = session.createQuery("FROM Request").list();
+      
+      TestUtils.submitTestRequest(testRequestContent, this.appContext);
+
+      List<Request> postRequests = session.createQuery("FROM Request").list();
+      assertEquals(preRequests.size() + 1, postRequests.size());
+      
+      Request omahaRequest = postRequests.get(postRequests.size() - 1);
+
+      assertEquals("{request-1234}", omahaRequest.getRequestID());
+      assertEquals("3.0", omahaRequest.getProtocol().getProtocolID());
+      assertEquals("{session-1234}", omahaRequest.getSession().getSessionID());
+      assertEquals("1.0.0.0", omahaRequest.getClientVersion().getVersionID());
+      assertEquals(true, omahaRequest.getIsMachine());
+      assertEquals(null, omahaRequest.getOriginURL());
+      assertEquals(null, omahaRequest.getUser());
    }
    
    @Test
