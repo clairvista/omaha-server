@@ -9,7 +9,6 @@ import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
@@ -24,11 +23,9 @@ import com.clairvista.liveexpert.omaha.server.model.ApplicationVersionRequest;
 import com.clairvista.liveexpert.omaha.server.model.Ping;
 import com.clairvista.liveexpert.omaha.server.model.Request;
 import com.clairvista.liveexpert.omaha.server.test.util.TestUtils;
-import com.clairvista.liveexpert.omaha.server.test.util.TestWebAppConfig;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/test/resources/test-servlet-context.xml"})
-@ComponentScan(basePackageClasses={TestWebAppConfig.class})
+@ContextConfiguration(locations={"classpath:servlet-context.xml"})
 @WebAppConfiguration
 @Transactional
 public class AppTest {

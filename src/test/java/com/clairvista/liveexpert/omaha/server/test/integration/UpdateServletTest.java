@@ -14,12 +14,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
-import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilder;
-import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
-import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
-import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.xml.DomUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -36,7 +30,7 @@ import com.clairvista.liveexpert.omaha.server.model.UpdateCheck;
 import com.clairvista.liveexpert.omaha.server.test.util.TestUtils;
 
 @RunWith(SpringJUnit4ClassRunner.class)
-@ContextConfiguration(locations={"file:src/test/resources/test-servlet-context.xml"})
+@ContextConfiguration(locations={"classpath:servlet-context.xml"})
 @WebAppConfiguration
 @Transactional
 @SuppressWarnings("unchecked")
@@ -44,8 +38,6 @@ public class UpdateServletTest {
    
    @Autowired
    private WebApplicationContext appContext;
-
-   private MockMvc mockMvc;
 
    @Autowired
    private SessionFactory sessionFactory;
@@ -77,8 +69,6 @@ public class UpdateServletTest {
    // TODO: Split this up. Validate indivudual components.
    @Test
    public void fullValidationTest() throws Exception {
-      this.mockMvc = MockMvcBuilders.webAppContextSetup(this.appContext).build();
-
       StringBuilder testInput = new StringBuilder();
       testInput.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       testInput.append("<request protocol=\"3.0\" version=\"1.3.23.0\" ismachine=\"0\" " +

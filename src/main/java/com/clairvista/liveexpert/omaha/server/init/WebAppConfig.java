@@ -41,7 +41,12 @@ public class WebAppConfig {
    public DataSource dataSource() {
       DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
-      dataSource.setDriverClassName(env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER));
+      String driver = env.getRequiredProperty(PROPERTY_NAME_DATABASE_DRIVER);
+      
+      // Verify that properties are set for this deployment.
+      assert driver != null && !driver.isEmpty() : "Required application properties are missing.";
+      
+      dataSource.setDriverClassName(driver);
       dataSource.setUrl(env.getRequiredProperty(PROPERTY_NAME_DATABASE_URL));
       dataSource.setUsername(env.getRequiredProperty(PROPERTY_NAME_DATABASE_USERNAME));
       dataSource.setPassword(env.getRequiredProperty(PROPERTY_NAME_DATABASE_PASSWORD));
@@ -53,6 +58,7 @@ public class WebAppConfig {
    public LocalSessionFactoryBean sessionFactory() {
       LocalSessionFactoryBean sessionFactoryBean = new LocalSessionFactoryBean();
       sessionFactoryBean.setDataSource(dataSource());
+
       sessionFactoryBean.setPackagesToScan(env.getRequiredProperty(PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN));
       sessionFactoryBean.setHibernateProperties(hibProperties());
       return sessionFactoryBean;
@@ -61,8 +67,13 @@ public class WebAppConfig {
    private Properties hibProperties() {
       Properties properties = new Properties();
 
-      properties.put(PROPERTY_NAME_HIBERNATE_AUTO_ACTION, "validate");
-      properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT));
+      String hibernateDialect = env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_DIALECT);
+      
+      // Verify that properties are set for this deployment.
+      assert hibernateDialect != null && !hibernateDialect.isEmpty() : "Required application properties are missing.";
+      
+      properties.put(PROPERTY_NAME_HIBERNATE_AUTO_ACTION, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_AUTO_ACTION));
+      properties.put(PROPERTY_NAME_HIBERNATE_DIALECT, hibernateDialect);
       properties.put(PROPERTY_NAME_HIBERNATE_SHOW_SQL, env.getRequiredProperty(PROPERTY_NAME_HIBERNATE_SHOW_SQL));
       
       return properties;   
