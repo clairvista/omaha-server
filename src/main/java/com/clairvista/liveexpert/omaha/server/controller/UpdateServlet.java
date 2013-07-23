@@ -97,7 +97,11 @@ public class UpdateServlet {
                " Request Content: " + requestContent);
       } else if(!operatingSystemElems.isEmpty()) {
          Element operatingSystemNode = operatingSystemElems.get(0);
-         operatingSystemService.recordOperatingSystem(omahaRequest, operatingSystemNode); 
+         try {
+            operatingSystemService.recordOperatingSystem(omahaRequest, operatingSystemNode); 
+         } catch (RequestElementValidationException reve) {
+            LOGGER.warn("Failed to record Operating System.", reve);
+         }
       } else {
          LOGGER.warn("No operating system node provided with request.");
       }

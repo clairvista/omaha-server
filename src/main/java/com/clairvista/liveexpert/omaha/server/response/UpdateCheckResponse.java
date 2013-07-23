@@ -2,6 +2,7 @@ package com.clairvista.liveexpert.omaha.server.response;
 
 import static com.clairvista.liveexpert.omaha.server.constants.APIElementNames.UPDATE_CHECK;
 import static com.clairvista.liveexpert.omaha.server.constants.ApplicationAttrs.STATUS;
+import static com.clairvista.liveexpert.omaha.server.constants.ApplicationAttrs.ERROR_DETAILS;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -32,6 +33,7 @@ public class UpdateCheckResponse extends AppChildResponse {
    public Element toXML(Document doc) {
       Element responseElem = doc.createElement(UPDATE_CHECK);
       responseElem.setAttribute(STATUS, status);
+      responseElem.setAttribute(ERROR_DETAILS, errorDetails);
       
       if(urls != null) {
          Element urlsElem = urls.toXML(doc);

@@ -12,6 +12,7 @@ public class EventResponse extends AppChildResponse {
    public Element toXML(Document doc) {
       Element responseElem = doc.createElement(APIElementNames.EVENT);
       responseElem.setAttribute(ApplicationAttrs.STATUS, status);
+      responseElem.setAttribute(ApplicationAttrs.ERROR_DETAILS, errorDetails);
       
       return responseElem;
    }

@@ -28,6 +28,15 @@ public class OperatingSystem {
    @Column(name="created_time")
    private Date createdTime;
 
+   public OperatingSystem() { }
+   
+   public OperatingSystem(String platform, String version, String servicePack, String architecture) {
+      this.platform = platform;
+      this.version = version;
+      this.servicePack = servicePack;
+      this.architecture = architecture;
+   }
+   
    public Integer getId() {
       return id;
    }

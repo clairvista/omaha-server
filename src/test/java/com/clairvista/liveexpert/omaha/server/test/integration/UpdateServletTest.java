@@ -63,7 +63,7 @@ public class UpdateServletTest {
       ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp1, "1.3.23.0", 
             "http://www.test-download.com", "test-app-1.exe", "VXriGUVI0TNqfLlU02vBel4Q3Zo=", 
             23963192, TestUtils.TEST_CREATOR_NAME);
-      TestUtils.populateTestData(testAppVersion1, session);
+      TestUtils.populateTestApplicationVersion(testAppVersion1, session);
       
       Application testApp2 = new Application("Test Application 2", "Test Application 2 Description", 
             "{D0AB2EBC-931B-4013-9FEB-C9C4C2225C8C}", TestUtils.TEST_CREATOR_NAME);
@@ -71,7 +71,7 @@ public class UpdateServletTest {
             "http://www.test-download.com", "test-app-2.exe", 
             "N2VhZGRjYmNjYTFhNjU3OTcyMjU3OWE4YThhNDA3ZWI2NTA4M2ZiYyAgcG9tLnhtbAo=", 
             23963192, TestUtils.TEST_CREATOR_NAME);
-      TestUtils.populateTestData(testAppVersion2, session);
+      TestUtils.populateTestApplicationVersion(testAppVersion2, session);
    }
    
    // TODO: Split this up. Validate indivudual components.

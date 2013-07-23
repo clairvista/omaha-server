@@ -28,6 +28,13 @@ public class User {
    @Column(name="created_time")
    private Date createdTime;
 
+   public User() { }
+   
+   public User(String userID, OperatingSystem os) {
+      this.userID = userID;
+      this.operatingSystem = os;
+   }
+
    public Integer getId() {
       return id;
    }

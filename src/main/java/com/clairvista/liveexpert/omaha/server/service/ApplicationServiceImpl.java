@@ -80,7 +80,7 @@ public class ApplicationServiceImpl implements ApplicationService {
       try {
          appRequest = applicationVersionRequestService.recordApplicationVersionRequest(request, appVersion, appElem);
       } catch(RequestElementValidationException reve) {
-         LOGGER.warn("Request validation failure.", reve);
+         LOGGER.warn("Application Version Request validation failure.", reve);
          appResponse.setStatus("error-validationFailure");
          appResponse.setErrorDetails(reve.getResponseErrorDetails());
          return appResponse;

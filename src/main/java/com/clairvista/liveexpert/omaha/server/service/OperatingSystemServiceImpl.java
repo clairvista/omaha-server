@@ -2,6 +2,7 @@ package com.clairvista.liveexpert.omaha.server.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -15,6 +16,7 @@ import com.clairvista.liveexpert.omaha.server.dao.UserDAO;
 import com.clairvista.liveexpert.omaha.server.model.OperatingSystem;
 import com.clairvista.liveexpert.omaha.server.model.Request;
 import com.clairvista.liveexpert.omaha.server.model.User;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 
 @Service
@@ -35,22 +37,26 @@ public class OperatingSystemServiceImpl implements OperatingSystemService {
    @Autowired
    private UserDAO userDAO;
 
-   public boolean validateOperatingSystem(Element operatingSystemElem) {
+   public boolean validateOperatingSystem(Element operatingSystemElem) 
+         throws RequestElementValidationException {
       List<String> missingAttributes = 
             XMLUtils.validateRequiredAttributes(operatingSystemElem, REQUIRED_OPERATING_SYSTEM_ATTRIBUTES);
       if(!missingAttributes.isEmpty()) {
          LOGGER.warn("INVALID REQUEST -- Missing required operating system attributes. " +
          		"Missing attributes: " + missingAttributes);
-         return false;
+         throw new RequestElementValidationException("Missing required Operating System attributes: " + missingAttributes,
+               "missing:" + StringUtils.join(missingAttributes, ","));
       }
       
       return true;
    }
    
-   public OperatingSystem recordOperatingSystem(Request request, Element operatingSystemElem) {
+   public OperatingSystem recordOperatingSystem(Request request, Element operatingSystemElem) 
+         throws RequestElementValidationException {
       // Validate Inputs:
       if(!validateOperatingSystem(operatingSystemElem)) {
-         return null;
+         throw new RequestElementValidationException("Operating System validation failed.", 
+               "osValidationFailed");
       }
       
       // Extract Inputs:
@@ -67,7 +73,7 @@ public class OperatingSystemServiceImpl implements OperatingSystemService {
          LOGGER.error("Failed to find or create operating system with platform: " + platform + 
                " and version: " + version + " and service pack: " + servicePack +
                " and architecture: " + architecture);
-         return null;
+         throw new RequestElementValidationException("Creation of Operating System element failed.", "creationFailure");
       }
       
       // Set the Request association.
@@ -81,10 +87,9 @@ public class OperatingSystemServiceImpl implements OperatingSystemService {
          if(currentOperatingSystem != null && currentOperatingSystem.getId() != operatingSystem.getId()) {
             LOGGER.warn("Change of Operating System detected for user " + user.getId() + ". " +
             		"Changed from record " + currentOperatingSystem.getId() + " to record " + operatingSystem.getId());
-
-            user.setOperatingSystem(operatingSystem);
-            userDAO.updateUser(user);
          }
+         user.setOperatingSystem(operatingSystem);
+         userDAO.updateUser(user);
       }
       
       return operatingSystem;

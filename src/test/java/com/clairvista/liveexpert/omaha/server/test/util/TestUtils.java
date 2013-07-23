@@ -21,7 +21,9 @@ import org.xml.sax.InputSource;
 
 import com.clairvista.liveexpert.omaha.server.model.Application;
 import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
+import com.clairvista.liveexpert.omaha.server.model.OperatingSystem;
 import com.clairvista.liveexpert.omaha.server.model.Protocol;
+import com.clairvista.liveexpert.omaha.server.model.User;
 
 @SuppressWarnings("unchecked")
 public class TestUtils {
@@ -42,7 +44,7 @@ public class TestUtils {
       }
    }
 
-   public static void populateTestData(ApplicationVersion testAppVersion, Session session) {
+   public static void populateTestApplicationVersion(ApplicationVersion testAppVersion, Session session) {
       Application testApp = testAppVersion.getApplication();
       List<Application> applications = session.createQuery("FROM Application WHERE appID = :appID")
             .setString("appID", testApp.getAppID())
@@ -53,13 +55,41 @@ public class TestUtils {
          testApp = applications.get(0);
       }
       
-      List<ApplicationVersion> appVersions = session.createQuery("FROM ApplicationVersion WHERE application = :applicationID AND versionID = :versionID")
+      List<ApplicationVersion> appVersions = session.createQuery("FROM ApplicationVersion " +
+      		"WHERE application = :applicationID " +
+      		"AND versionID = :versionID")
             .setInteger("applicationID", testApp.getId())
             .setString("versionID", testAppVersion.getVersionID())
             .list();
       if(appVersions.isEmpty()) {
          testAppVersion.setApplication(testApp);
          session.save(testAppVersion);
+      }
+   }
+
+   public static void populateTestOperatingSystem(OperatingSystem testOS, Session session) {
+      List<OperatingSystem> existingOSs = session.createQuery("FROM OperatingSystem " +
+            "WHERE platform = :platform " +
+            "AND version = :version " +
+            "AND servicePack = :servicePack " +
+            "AND architecture = :architecture")
+            .setString("platform", testOS.getPlatform())
+            .setString("version", testOS.getVersion())
+            .setString("servicePack", testOS.getServicePack())
+            .setString("architecture", testOS.getArchitecture())
+            .list();
+      if(existingOSs.isEmpty()) {
+         session.save(testOS);
+      }
+   }
+
+   public static void populateTestUser(User testUser, Session session) {
+      List<User> existingUsers = session.createQuery("FROM User " +
+            "WHERE userID = :userID " )
+            .setString("userID", testUser.getUserID())
+            .list();
+      if(existingUsers.isEmpty()) {
+         session.save(testUser);
       }
    }
    

@@ -65,6 +65,7 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
       if(appRequest == null) {
          LOGGER.error("Update Check request did not reference an Application Version Request.");
          response.setStatus("error-internal");
+         response.setErrorDetails("noAppVersionRequest");
          return response;
       }
       
@@ -72,6 +73,7 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
       if(appVersion == null) {
          LOGGER.error("Application Version Request for Update Check request did not reference an Application Version.");
          response.setStatus("error-internal");
+         response.setErrorDetails("noAppVersion");
          return response;
       }
       
@@ -79,6 +81,7 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
       if(app == null) {
          LOGGER.error("Application Version for Update Check request did not reference an Application.");
          response.setStatus("error-internal");
+         response.setErrorDetails("noApp");
          return response;
       }
       
@@ -88,6 +91,7 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
       if(currentVersion == null) {
          LOGGER.error("Unable to identify current version for Update Check.");
          response.setStatus("error-internal");
+         response.setErrorDetails("noCurrentVersion");
          return response;
       }
       
@@ -127,6 +131,7 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
       } else {
          LOGGER.error("Installer was not found at the expected location.");
          response.setStatus("error-internal");
+         response.setErrorDetails("installerNotFound");
       }
    }
 

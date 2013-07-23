@@ -2,6 +2,7 @@ package com.clairvista.liveexpert.omaha.server.service;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -12,6 +13,7 @@ import com.clairvista.liveexpert.omaha.server.constants.EventAttrs;
 import com.clairvista.liveexpert.omaha.server.dao.EventDAO;
 import com.clairvista.liveexpert.omaha.server.model.ApplicationVersionRequest;
 import com.clairvista.liveexpert.omaha.server.model.Event;
+import com.clairvista.liveexpert.omaha.server.util.RequestElementValidationException;
 import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 
 @Service
@@ -26,22 +28,24 @@ public class EventServiceImpl implements EventService {
    @Autowired
    private EventDAO eventDAO;
 
-   public boolean validateEvent(Element eventElem) {
+   public boolean validateEvent(Element eventElem) throws RequestElementValidationException {
       List<String> missingAttributes = 
             XMLUtils.validateRequiredAttributes(eventElem, REQUIRED_EVENT_ATTRIBUTES);
       if(!missingAttributes.isEmpty()) {
          LOGGER.warn("INVALID REQUEST -- Missing required event attributes. " +
          		"Missing attributes: " + missingAttributes);
-         return false;
+         throw new RequestElementValidationException("Missing required Event attributes: " + missingAttributes,
+               "missing:" + StringUtils.join(missingAttributes, ","));
       }
       
       return true;
    }
    
-   public Event recordEvent(ApplicationVersionRequest appRequest, Element eventElem) {
+   public Event recordEvent(ApplicationVersionRequest appRequest, Element eventElem) 
+         throws RequestElementValidationException {
       // Validate Inputs:
       if(!validateEvent(eventElem)) {
-         return null;
+         throw new RequestElementValidationException("Event validation failed.", "eventValidationFailed");
       }
       
       // Extract Inputs:
@@ -55,7 +59,7 @@ public class EventServiceImpl implements EventService {
       Integer updateCheckTime = XMLUtils.parseInteger(eventElem, EventAttrs.UPDATE_CHECK_TIME_MS);
       Integer installTime = XMLUtils.parseInteger(eventElem, EventAttrs.INSTALL_TIME_MS);
       Integer sourceURLIndex = XMLUtils.parseInteger(eventElem, EventAttrs.SOURCE_URL_INDEX);
-      Integer stateCancelled = XMLUtils.parseInteger(eventElem, EventAttrs.STATE_CANCELLED);
+      String stateCancelled = XMLUtils.parseString(eventElem, EventAttrs.STATE_CANCELLED);
       Integer timeSinceUpdateAvailable = XMLUtils.parseInteger(eventElem, EventAttrs.TIME_SINCE_UPDATE_AVAILABLE_MS);
       Integer timeSinceDownloadStart = XMLUtils.parseInteger(eventElem, EventAttrs.TIME_SINCE_DOWNLOAD_START_MS);
       

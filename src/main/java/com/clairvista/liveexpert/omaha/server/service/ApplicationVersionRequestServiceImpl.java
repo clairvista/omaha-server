@@ -128,8 +128,14 @@ public class ApplicationVersionRequestServiceImpl implements ApplicationVersionR
          pingService.recordPing(appRequest, actionElem);
          response = new PingResponse();
       } else if(APIElementNames.EVENT.equals(actionName)) {
-         eventService.recordEvent(appRequest, actionElem);
          response = new EventResponse();
+         try {
+            eventService.recordEvent(appRequest, actionElem);
+         } catch (RequestElementValidationException reve) {
+            LOGGER.warn("Event validation failure.", reve);
+            response.setStatus("error-validationFailure");
+            response.setErrorDetails(reve.getResponseErrorDetails());
+         }
       } else if(APIElementNames.UPDATE_CHECK.equals(actionName)) {
          UpdateCheck updateCheck = updateCheckService.recordUpdateCheck(appRequest, actionElem);
          response = updateCheckService.processUpdateCheck(updateCheck);

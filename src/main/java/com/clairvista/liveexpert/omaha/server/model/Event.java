@@ -53,7 +53,7 @@ public class Event {
    private Integer sourceUrlIndex;
 
    @Column(name="state_cancelled")
-   private Integer stateCancelled;
+   private String stateCancelled;
 
    @Column(name="time_since_update_available")
    private Integer timeSinceUpdateAvailable;
@@ -160,11 +160,11 @@ public class Event {
       this.sourceUrlIndex = sourceUrlIndex;
    }
 
-   public Integer getStateCancelled() {
+   public String getStateCancelled() {
       return stateCancelled;
    }
 
-   public void setStateCancelled(Integer stateCancelled) {
+   public void setStateCancelled(String stateCancelled) {
       this.stateCancelled = stateCancelled;
    }
 

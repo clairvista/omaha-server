@@ -235,7 +235,7 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
              bytes_downloaded INT,
              total_size INT,
              source_url_index INT,
-             state_cancelled INT,
+             state_cancelled VARCHAR(255),
              time_since_update_available INT,
              time_since_download_start INT,
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

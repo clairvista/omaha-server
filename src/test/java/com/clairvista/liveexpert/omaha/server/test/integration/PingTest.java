@@ -13,7 +13,6 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.xml.DomUtils;
 import org.springframework.web.context.WebApplicationContext;
@@ -32,7 +31,7 @@ import com.clairvista.liveexpert.omaha.server.test.util.TestWebAppConfig;
 @ComponentScan(basePackageClasses={TestWebAppConfig.class})
 @WebAppConfiguration
 @Transactional
-public class RequestTest {
+public class PingTest {
    
    @Autowired
    private WebApplicationContext appContext;
@@ -50,116 +49,50 @@ public class RequestTest {
       
       Application testApp = new Application("Test Application", "Test Application Description", 
             "{test-app-1234}", TestUtils.TEST_CREATOR_NAME);
-      ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp, "0.0.0.0", 
+      ApplicationVersion testAppVersion0 = new ApplicationVersion(testApp, "0.0.0.0", 
+            "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1234=", 
+            1234, TestUtils.TEST_CREATOR_NAME);
+      TestUtils.populateTestApplicationVersion(testAppVersion0, session);
+      ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp, "1.2.3.4", 
             "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1234=", 
             1234, TestUtils.TEST_CREATOR_NAME);
       TestUtils.populateTestApplicationVersion(testAppVersion1, session);
    }
 
    @Test
-   public void invalidProtocolResponseTest() throws Exception {
-      StringBuilder testRequestContent = new StringBuilder();
-      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      testRequestContent.append("<request protocol=\"foo\" version=\"1.0.0.0\" ismachine=\"1\" " +
-            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
-      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
-      testRequestContent.append("    <updatecheck/>");
-      testRequestContent.append("  </app>");
-      testRequestContent.append("</request>");
-
-      MvcResult result = TestUtils.submitTestRequestWithRawResponse(testRequestContent, this.appContext);
-      String responseContent = TestUtils.extractResponseContent(result);
-
-      assertEquals("invalidRequest-unsupportedProtocol", responseContent);
-   }
-
-   @SuppressWarnings("unchecked")
-   @Test
-   public void invalidProtocolDataCaptureTest() throws Exception {
-      StringBuilder testRequestContent = new StringBuilder();
-      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      testRequestContent.append("<request protocol=\"foo\" version=\"1.0.0.0\" ismachine=\"1\" " +
-            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
-      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
-      testRequestContent.append("    <updatecheck/>");
-      testRequestContent.append("  </app>");
-      testRequestContent.append("</request>"); 
-
-      List<Request> preRequests = session.createQuery("FROM Request").list();
-      
-      TestUtils.submitTestRequestWithRawResponse(testRequestContent, this.appContext);
-
-      List<Request> postRequests = session.createQuery("FROM Request").list();
-      // NOTE: No request is recorded.
-      assertEquals(preRequests.size(), postRequests.size());
-   }
-   
-   @Test
-   public void missingAttrResponseTest() throws Exception {
-      StringBuilder testRequestContent = new StringBuilder();
-      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      testRequestContent.append("<request protocol=\"3.0\" sessionid=\"{session-1234}\">");
-      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
-      testRequestContent.append("    <updatecheck/>");
-      testRequestContent.append("  </app>");
-      testRequestContent.append("</request>");
-
-      MvcResult result = TestUtils.submitTestRequestWithRawResponse(testRequestContent, this.appContext);
-      String responseContent = TestUtils.extractResponseContent(result);
-
-      assertEquals("invalidRequest-missing:version,ismachine,requestid", responseContent);
-   }
-
-   @SuppressWarnings("unchecked")
-   @Test
-   public void missingAttrDataCaptureTest() throws Exception {
-      StringBuilder testRequestContent = new StringBuilder();
-      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
-      testRequestContent.append("<request protocol=\"3.0\" sessionid=\"{session-1234}\">");
-      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" lang=\"en\">");
-      testRequestContent.append("    <updatecheck/>");
-      testRequestContent.append("  </app>");
-      testRequestContent.append("</request>");
-
-      List<Request> preRequests = session.createQuery("FROM Request").list();
-      
-      TestUtils.submitTestRequestWithRawResponse(testRequestContent, this.appContext);
-
-      List<Request> postRequests = session.createQuery("FROM Request").list();
-      // NOTE: No request is recorded.
-      assertEquals(preRequests.size(), postRequests.size());
-   }
-   
-   @Test
-   public void noAppsResponseTest() throws Exception {
+   public void successEmptyResponseTest() throws Exception {
       StringBuilder testRequestContent = new StringBuilder();
       testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("    <ping />");
+      testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
-
+      
       Element responseElem = TestUtils.submitTestRequest(testRequestContent, this.appContext);
 
-      assertEquals("todo", responseElem.getAttribute("server"));
-      assertEquals("3.0", responseElem.getAttribute("protocol"));
+      List<Element> appElems = DomUtils.getChildElementsByTagName(responseElem, "app");
+      assertEquals(1, appElems.size());
 
-      List<Element> children = DomUtils.getChildElements(responseElem);
-      assertEquals(1, children.size());  // One for the daystart
+      List<Element> pingElems = DomUtils.getChildElementsByTagName(appElems.get(0), "ping");
+      assertEquals(1, pingElems.size());
+      
+      assertEquals("ok", pingElems.get(0).getAttribute("status"));
    }
 
    @SuppressWarnings("unchecked")
    @Test
-   public void noAppsDataCaptureTest() throws Exception {
+   public void successEmptyDataCaptureTest() throws Exception {
       StringBuilder testRequestContent = new StringBuilder();
       testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("    <ping />");
+      testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
 
       List<Request> preRequests = session.createQuery("FROM Request").list();
@@ -170,16 +103,25 @@ public class RequestTest {
       assertEquals(preRequests.size() + 1, postRequests.size());
       
       Request omahaRequest = postRequests.get(postRequests.size() - 1);
-
-      assertEquals("{request-1234}", omahaRequest.getRequestID());
-      assertEquals("3.0", omahaRequest.getProtocol().getProtocolID());
-      assertEquals("{session-1234}", omahaRequest.getSession().getSessionID());
-      assertEquals("1.0.0.0", omahaRequest.getClientVersion().getVersionID());
-      assertEquals(true, omahaRequest.getIsMachine());
-      assertEquals(null, omahaRequest.getOriginURL());
-      assertEquals(null, omahaRequest.getUser());
+      List<ApplicationVersionRequest> appRequests = session.createQuery(
+            "FROM ApplicationVersionRequest WHERE request = :requestID")
+            .setInteger("requestID", omahaRequest.getId())
+            .list();
+      assertEquals(1, appRequests.size());
+      ApplicationVersionRequest appRequest = appRequests.get(0);
+      
+      List<Ping> pings = session.createQuery(
+            "FROM Ping WHERE applicationVersionRequest = :appRequestID")
+            .setInteger("appRequestID", appRequest.getId())
+            .list();
+      assertEquals(1, pings.size());
+      
+      Ping ping = pings.get(0);
+      assertEquals(null, ping.getWasActive());
+      assertEquals(null, ping.getLastActive());
+      assertEquals(null, ping.getLastPresent());
    }
-   
+
    @Test
    public void successResponseTest() throws Exception {
       StringBuilder testRequestContent = new StringBuilder();
@@ -188,29 +130,31 @@ public class RequestTest {
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
       testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
-      testRequestContent.append("    <updatecheck/>");
+      testRequestContent.append("    <ping active=\"1\" a=\"12\" r=\"5\"/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
       
       Element responseElem = TestUtils.submitTestRequest(testRequestContent, this.appContext);
 
-      assertEquals("todo", responseElem.getAttribute("server"));
-      assertEquals("3.0", responseElem.getAttribute("protocol"));
+      List<Element> appElems = DomUtils.getChildElementsByTagName(responseElem, "app");
+      assertEquals(1, appElems.size());
 
-      List<Element> children = DomUtils.getChildElements(responseElem);
-      assertEquals(2, children.size());  // One for the daystart and one for the app
+      List<Element> pingElems = DomUtils.getChildElementsByTagName(appElems.get(0), "ping");
+      assertEquals(1, pingElems.size());
+      
+      assertEquals("ok", pingElems.get(0).getAttribute("status"));
    }
 
    @SuppressWarnings("unchecked")
    @Test
-   public void successDataCaptureTest() throws Exception {
+   public void successWithActiveDataCaptureTest() throws Exception {
       StringBuilder testRequestContent = new StringBuilder();
       testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
       testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
-      testRequestContent.append("    <updatecheck/>");
+      testRequestContent.append("    <ping active=\"1\" a=\"12\" r=\"5\"/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
 
@@ -222,26 +166,35 @@ public class RequestTest {
       assertEquals(preRequests.size() + 1, postRequests.size());
       
       Request omahaRequest = postRequests.get(postRequests.size() - 1);
-
-      assertEquals("{request-1234}", omahaRequest.getRequestID());
-      assertEquals("3.0", omahaRequest.getProtocol().getProtocolID());
-      assertEquals("{session-1234}", omahaRequest.getSession().getSessionID());
-      assertEquals("1.0.0.0", omahaRequest.getClientVersion().getVersionID());
-      assertEquals(true, omahaRequest.getIsMachine());
-      assertEquals(null, omahaRequest.getOriginURL());
-      assertEquals(null, omahaRequest.getUser());
+      List<ApplicationVersionRequest> appRequests = session.createQuery(
+            "FROM ApplicationVersionRequest WHERE request = :requestID")
+            .setInteger("requestID", omahaRequest.getId())
+            .list();
+      assertEquals(1, appRequests.size());
+      ApplicationVersionRequest appRequest = appRequests.get(0);
+      
+      List<Ping> pings = session.createQuery(
+            "FROM Ping WHERE applicationVersionRequest = :appRequestID")
+            .setInteger("appRequestID", appRequest.getId())
+            .list();
+      assertEquals(1, pings.size());
+      
+      Ping ping = pings.get(0);
+      assertEquals(true, ping.getWasActive());
+      assertEquals(12, (int) ping.getLastActive());
+      assertEquals(5, (int) ping.getLastPresent());
    }
 
    @SuppressWarnings("unchecked")
    @Test
-   public void withUserDataCaptureTest() throws Exception {
+   public void successWithInactiveDataCaptureTest() throws Exception {
       StringBuilder testRequestContent = new StringBuilder();
       testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
-            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\" userid=\"{user-1234}\">");
+            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
       testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
-      testRequestContent.append("    <updatecheck/>");
+      testRequestContent.append("    <ping active=\"0\" a=\"0\"/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
 
@@ -253,15 +206,62 @@ public class RequestTest {
       assertEquals(preRequests.size() + 1, postRequests.size());
       
       Request omahaRequest = postRequests.get(postRequests.size() - 1);
-
-      assertEquals("{request-1234}", omahaRequest.getRequestID());
-      assertEquals("3.0", omahaRequest.getProtocol().getProtocolID());
-      assertEquals("{session-1234}", omahaRequest.getSession().getSessionID());
-      assertEquals("1.0.0.0", omahaRequest.getClientVersion().getVersionID());
-      assertEquals(true, omahaRequest.getIsMachine());
-      assertEquals(null, omahaRequest.getOriginURL());
-      assertEquals("{user-1234}", omahaRequest.getUser().getUserID());
+      List<ApplicationVersionRequest> appRequests = session.createQuery(
+            "FROM ApplicationVersionRequest WHERE request = :requestID")
+            .setInteger("requestID", omahaRequest.getId())
+            .list();
+      assertEquals(1, appRequests.size());
+      ApplicationVersionRequest appRequest = appRequests.get(0);
+      
+      List<Ping> pings = session.createQuery(
+            "FROM Ping WHERE applicationVersionRequest = :appRequestID")
+            .setInteger("appRequestID", appRequest.getId())
+            .list();
+      assertEquals(1, pings.size());
+      
+      Ping ping = pings.get(0);
+      assertEquals(false, ping.getWasActive());
+      assertEquals(0, (int) ping.getLastActive());
+      assertEquals(null, ping.getLastPresent());
    }
-   
-   // TODO: Add test to verify that the session, user, and client version are not created if one already exists. 
+
+   @SuppressWarnings("unchecked")
+   @Test
+   public void successNewInstallDataCaptureTest() throws Exception {
+      StringBuilder testRequestContent = new StringBuilder();
+      testRequestContent.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>");
+      testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
+            "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
+      testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("    <ping active=\"0\" a=\"-1\" r=\"-1\" />");
+      testRequestContent.append("  </app>");
+      testRequestContent.append("</request>");
+
+      List<Request> preRequests = session.createQuery("FROM Request").list();
+      
+      TestUtils.submitTestRequest(testRequestContent, this.appContext);
+
+      List<Request> postRequests = session.createQuery("FROM Request").list();
+      assertEquals(preRequests.size() + 1, postRequests.size());
+      
+      Request omahaRequest = postRequests.get(postRequests.size() - 1);
+      List<ApplicationVersionRequest> appRequests = session.createQuery(
+            "FROM ApplicationVersionRequest WHERE request = :requestID")
+            .setInteger("requestID", omahaRequest.getId())
+            .list();
+      assertEquals(1, appRequests.size());
+      ApplicationVersionRequest appRequest = appRequests.get(0);
+      
+      List<Ping> pings = session.createQuery(
+            "FROM Ping WHERE applicationVersionRequest = :appRequestID")
+            .setInteger("appRequestID", appRequest.getId())
+            .list();
+      assertEquals(1, pings.size());
+      
+      Ping ping = pings.get(0);
+      assertEquals(false, ping.getWasActive());
+      assertEquals(-1, (int) ping.getLastActive());
+      assertEquals(-1, (int) ping.getLastPresent());
+   }
 }

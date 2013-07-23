@@ -52,11 +52,11 @@ public class AppTest {
       ApplicationVersion testAppVersion0 = new ApplicationVersion(testApp, "0.0.0.0", 
             "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1234=", 
             1234, TestUtils.TEST_CREATOR_NAME);
-      TestUtils.populateTestData(testAppVersion0, session);
+      TestUtils.populateTestApplicationVersion(testAppVersion0, session);
       ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp, "1.2.3.4", 
             "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1234=", 
             1234, TestUtils.TEST_CREATOR_NAME);
-      TestUtils.populateTestData(testAppVersion1, session);
+      TestUtils.populateTestApplicationVersion(testAppVersion1, session);
    }
    
    @Test
