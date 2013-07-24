@@ -1,0 +1,75 @@
+Generic Omaha Server README
+=================
+
+Purpose:
+-----------------
+
+The goal of this project is to provide a Java-based implementation of 
+a Google Omaha compatible server. This server implements (most of) the Omaha 
+3.0 protocol, as described at 
+https://code.google.com/p/omaha/wiki/ServerProtocol. 
+
+
+Deployment Requirements
+-----------------
+
+The WAR build artifact can be deployed in an application server of your 
+choosing. The only inputs to the application itself are the following
+JAVA_OPTS:
+
+* db.driver: The classname of the database driver to be used by the application (e.g. com.mysql.jdbc.Driver)
+* db.url: The DB connection URL to be used by the application (e.g. jdbc:mysql://localhost:3306/leomaha)
+* db.username: The username with which the application should connect to the specified database (e.g. omahaDbUser)
+* db.password: The password corresponding to the specified user that the application should use to connect to the specified database (e.g. omahaPass)
+* hibernate.dialect: The classname of the Hibernate dialect that the application should use in communicating with the specified database (e.g. org.hibernate.dialect.MySQL5InnoDBDialect)
+
+The following are optional JAVA_OPTS:
+
+* omaha.serverkey: Specifies the value returned by this server in the response's server attribute (e.g. omahaServer)
+
+
+Design Decisions:
+-----------------
+
+* This server does not currently include CUP support. The expectation is that the application server onto which you deploy this has an SSL certificate setup for HTTPS requests.
+* Applications serviced by this server are always fully reinstalled (i.e. patch updates are not supported).
+* Application versions will be ordered by version ID descending when finding the current version.
+* Each application uses a single installer binary.
+* The size and hash for each installer is known ahead of time and written to the DB when a new version record is created for an application
+* The download server does not need to be the same machine as the update server.
+* The download server should respond to HEAD requests for all files that it provides for download.
+* Data actions are not used or recorded.
+
+
+Technology Stack:
+-----------------
+
+Development:
+
+* Maven: http://maven.apache.org/
+* Spring Framework: http://www.springsource.org/spring-framework
+* Hibernate: http://www.hibernate.org/
+* Log4J: http://logging.apache.org/log4j/
+* JUnit: http://junit.org/
+
+
+Deployment:
+
+* Build Server:
+** TeamCity: http://www.jetbrains.com/teamcity/
+** Jenkins: http://jenkins-ci.org/
+* Application Server:
+** Tomcat: http://tomcat.apache.org/
+** JBoss: http://www.jboss.org/
+* Database:
+** MySQL: http://www.mysql.com/
+** PostgreSQL: http://www.postgresql.org/
+** HSQLDB: http://hsqldb.org/
+
+
+Resources:
+-----------------
+
+* Protocol Definition: https://code.google.com/p/omaha/wiki/ServerProtocol
+* Omaha Project: https://code.google.com/p/omaha/
+* Design Overview: http://omaha.googlecode.com/svn/wiki/OmahaOverview.html
