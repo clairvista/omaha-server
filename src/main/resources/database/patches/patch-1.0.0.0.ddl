@@ -205,7 +205,7 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
       CREATE TABLE leomaha.pings
            ( id INT UNSIGNED NOT NULL AUTO_INCREMENT,
              application_version_request_id INT UNSIGNED NOT NULL,
-             was_active INT(1) UNSIGNED NOT NULL DEFAULT 0,
+             was_active INT(1) UNSIGNED DEFAULT 0,
              last_active INT,
              last_present INT,
              created_time TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,

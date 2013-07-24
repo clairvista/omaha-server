@@ -1,11 +1,11 @@
-Omaha Server README
+Generic Omaha Server README
 =================
 
 Purpose:
 -----------------
 
 The goal of this project is to provide a Java-based implementation of 
-a Omaha compatible server. This server implements (most of) the Omaha 
+a Google Omaha compatible server. This server implements (most of) the Omaha 
 3.0 protocol, as described at 
 https://code.google.com/p/omaha/wiki/ServerProtocol. 
 
