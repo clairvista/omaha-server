@@ -15,6 +15,10 @@ public class ActionResponse {
    private String terminateAllBrowsers;
    private String successAction;
    
+   public ActionResponse() {
+      successAction = "default";
+   }
+   
    public void setEvent(String event) {
       this.event = event;
    }

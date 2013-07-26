@@ -161,7 +161,7 @@ public class AppTest {
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.4\">");
+      testRequestContent.append("  <app>");
       testRequestContent.append("    <updatecheck/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
@@ -170,10 +170,11 @@ public class AppTest {
 
       List<Element> appElems = DomUtils.getChildElementsByTagName(responseElem, "app");
       assertEquals(1, appElems.size());
-      
+
+      // There are no attributes that are required outside of the appid.
       Element appElem = appElems.get(0);
-      assertEquals("error-validationFailure", appElem.getAttribute("status"));
-      assertEquals("missing:lang", appElem.getAttribute("errorDetails"));
+      assertEquals("error-unknownApplication", appElem.getAttribute("status"));
+      assertEquals("", appElem.getAttribute("errorDetails"));
    }
 
    @SuppressWarnings("unchecked")
@@ -184,7 +185,7 @@ public class AppTest {
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1234}\" requestid=\"{request-1234}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.5\" brand=\"test\">");
+      testRequestContent.append("  <app>");
       testRequestContent.append("    <updatecheck/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");

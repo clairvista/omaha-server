@@ -157,7 +157,7 @@ CREATE PROCEDURE leomaha.setup_initial_db_structure() BEGIN
              application_version_id INT UNSIGNED,
              request_id INT UNSIGNED NOT NULL,
              next_version VARCHAR(255),
-             language VARCHAR(255) NOT NULL,
+             language VARCHAR(255),
              brand VARCHAR(255),
              client VARCHAR(255),
              additional_params VARCHAR(255),
