@@ -1,6 +1,8 @@
 package com.clairvista.liveexpert.omaha.server.model;
 
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,10 +12,14 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.apache.log4j.Logger;
+
 @Entity
 @Table(name="application_versions")
 public class ApplicationVersion {
 
+   private static Logger LOGGER = Logger.getLogger(ApplicationVersion.class);
+   
    @Id
    @GeneratedValue
    private Integer id;
@@ -137,6 +143,31 @@ public class ApplicationVersion {
 
    public void setCreatedBy(String createdBy) {
       this.createdBy = createdBy;
+   }
+
+   /**
+    * Splits the version number on '.'s and converts it into a list of integers.
+    * 
+    * @return The list of integers representing the version number.
+    */
+   public List<Integer> getParsedVersionID() {
+      List<Integer >parsedVersion = new ArrayList<Integer>();
+      if(this.versionID == null || this.versionID.isEmpty()) {
+         return parsedVersion;
+      }
+      
+      String[] splitVersion = this.versionID.split("\\.");
+      for(String tupleString : splitVersion) {
+         Integer tuple = 0;
+         try {
+            tuple = Integer.parseInt(tupleString);
+         } catch (NumberFormatException nfe) {
+            LOGGER.warn("Unable to parse version tuple '" + tupleString + "' of application version " + this.id);
+         }
+         parsedVersion.add(tuple);
+      }
+      
+      return parsedVersion;
    }
    
 }

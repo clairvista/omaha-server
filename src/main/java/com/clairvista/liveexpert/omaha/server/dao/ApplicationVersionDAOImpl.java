@@ -1,7 +1,12 @@
 package com.clairvista.liveexpert.omaha.server.dao;
 
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
+import org.apache.log4j.Logger;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,6 +17,8 @@ import com.clairvista.liveexpert.omaha.server.model.ApplicationVersion;
 
 @Repository
 public class ApplicationVersionDAOImpl implements ApplicationVersionDAO {
+
+   private static Logger LOGGER = Logger.getLogger(ApplicationVersionDAOImpl.class);
    
    @Autowired
    private SessionFactory sessionFactory;
@@ -64,16 +71,61 @@ public class ApplicationVersionDAOImpl implements ApplicationVersionDAO {
    @SuppressWarnings("unchecked")
    public ApplicationVersion findCurrentForApplication(Application app) {
       List<ApplicationVersion> versions = getCurrentSession().createQuery("FROM ApplicationVersion" +
-            " WHERE application = :applicationID" +
-            " ORDER BY versionID DESC")
+            " WHERE application = :applicationID")
             .setInteger("applicationID", app.getId())
             .list();
-      if(versions.size() > 0) {
-         return versions.get(0);
+
+      Map<ApplicationVersion, List<Integer>> versionLookup = new HashMap<ApplicationVersion, List<Integer>>();
+      for(ApplicationVersion version : versions) {
+         versionLookup.put(version, version.getParsedVersionID());
       }
-      return null;
+      Set<ApplicationVersion> initialVersions = versionLookup.keySet();
+      return findLargestVersion(versionLookup, initialVersions, 0);
    }
 
+   /**
+    * Recursively finds the initialVersions entry with the numerically largest version number.
+    *
+    * @param versionLookup  A lookup map providing versions for each entry in the initialVersions set.
+    * @param initialVersions  The set of versions to be considered as part of this iteration.
+    * @param currentIndex  The version tuple index being considered during this iteration.
+    * @return The entry from initialVersions with the numerically largest version number.
+    */
+   private ApplicationVersion findLargestVersion(Map<ApplicationVersion, List<Integer>> versionLookup, 
+         Set<ApplicationVersion> initialVersions, Integer currentIndex) {
+      if(initialVersions.isEmpty()) { return null; }
+      if(initialVersions.size() == 1) { return (ApplicationVersion) initialVersions.toArray()[0]; }
+      
+      Set<ApplicationVersion> finalVersions = new HashSet<ApplicationVersion>();
+      
+      int maxValue = 0;
+      for(ApplicationVersion version : initialVersions) {
+         List<Integer> parsedVersion = versionLookup.get(version);
+         if(parsedVersion.size() > currentIndex) {
+            Integer value = parsedVersion.get(currentIndex);
+            if(value == null) { 
+               continue; 
+            } else if(value == maxValue) {
+               finalVersions.add(version);
+            } else if(value > maxValue) {
+               maxValue = value;
+               finalVersions.clear();
+               finalVersions.add(version);
+            }
+         }
+      }
+      if(finalVersions.isEmpty()) {
+         ApplicationVersion version = (ApplicationVersion) initialVersions.toArray()[0];
+         if(initialVersions.size() > 1) {
+            LOGGER.warn("Found " + initialVersions.size() + " equal versions for application " + 
+                  version.getApplication().getId() + ". Returning version " + version.getId());
+         }
+         return version;
+      } else {
+         return findLargestVersion(versionLookup, finalVersions, (currentIndex + 1));
+      }
+   }
+   
    public void deleteApplicationVersion(int id) {
       ApplicationVersion version = getApplicationVersion(id);
       if (version != null)

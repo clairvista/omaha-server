@@ -2,7 +2,6 @@ package com.clairvista.liveexpert.omaha.server.service;
 
 import java.util.List;
 
-import org.apache.commons.lang3.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -27,9 +26,6 @@ import com.clairvista.liveexpert.omaha.server.util.XMLUtils;
 @Service
 @Transactional
 public class ApplicationVersionRequestServiceImpl implements ApplicationVersionRequestService {
-
-   private static final String[] REQUIRED_APPLICATION_ATTRIBUTES = new String[]
-         { ApplicationAttrs.LANGUAGE };
    
    private static Logger LOGGER = Logger.getLogger(ApplicationVersionRequestServiceImpl.class);
 
@@ -46,14 +42,6 @@ public class ApplicationVersionRequestServiceImpl implements ApplicationVersionR
    private UpdateCheckService updateCheckService;
    
    public boolean validateApplicationVersionRequest(Element appElem) throws RequestElementValidationException {
-      List<String> missingAttributes = XMLUtils.validateRequiredAttributes(appElem, REQUIRED_APPLICATION_ATTRIBUTES);
-      if(!missingAttributes.isEmpty()) {
-         LOGGER.warn("INVALID REQUEST -- Missing required application attributes. " +
-               "Missing attributes: " + missingAttributes);
-         throw new RequestElementValidationException("Missing required Application attributes: " + missingAttributes,
-               "missing:" + StringUtils.join(missingAttributes, ","));
-      }
-      
       return true;
    }
 

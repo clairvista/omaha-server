@@ -51,7 +51,7 @@ public class UpdateCheckTest {
             1234, TestUtils.TEST_CREATOR_NAME);
       TestUtils.populateTestApplicationVersion(testAppVersion1, session);
 
-      ApplicationVersion testAppVersion2 = new ApplicationVersion(testApp, "1.2.3.5", 
+      ApplicationVersion testAppVersion2 = new ApplicationVersion(testApp, "1.2.3.10", 
             "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1235=", 
             1235, TestUtils.TEST_CREATOR_NAME);
       TestUtils.populateTestApplicationVersion(testAppVersion2, session);
@@ -64,7 +64,7 @@ public class UpdateCheckTest {
       testRequestContent.append("<request protocol=\"3.0\" version=\"1.0.0.0\" ismachine=\"1\" " +
             "sessionid=\"{session-1235}\" requestid=\"{request-1235}\">");
       testRequestContent.append("  <os platform=\"mac\" version=\"MacOSX\"/>");
-      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.5\" lang=\"en\" brand=\"test\">");
+      testRequestContent.append("  <app appid=\"{test-app-1234}\" version=\"1.2.3.10\" lang=\"en\" brand=\"test\">");
       testRequestContent.append("    <updatecheck/>");
       testRequestContent.append("  </app>");
       testRequestContent.append("</request>");
