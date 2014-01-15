@@ -51,14 +51,14 @@ public class UpdateServletTest {
       TestUtils.setupStaticDBContent(session);
       
       Application testApp1 = new Application("Test Application 1", "Test Application 1 Description", 
-            "{430FD4D0-B729-4F61-AA34-91526481799D}", TestUtils.TEST_CREATOR_NAME);
+            "{430FD4D0-B729-4F61-AA34-91526481799D}", "", TestUtils.TEST_CREATOR_NAME);
       ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp1, "1.3.23.0", 
             "http://www.test-download.com", "test-app-1.exe", "VXriGUVI0TNqfLlU02vBel4Q3Zo=", 
             23963192, TestUtils.TEST_CREATOR_NAME);
       TestUtils.populateTestApplicationVersion(testAppVersion1, session);
       
       Application testApp2 = new Application("Test Application 2", "Test Application 2 Description", 
-            "{D0AB2EBC-931B-4013-9FEB-C9C4C2225C8C}", TestUtils.TEST_CREATOR_NAME);
+            "{D0AB2EBC-931B-4013-9FEB-C9C4C2225C8C}", "", TestUtils.TEST_CREATOR_NAME);
       ApplicationVersion testAppVersion2 = new ApplicationVersion(testApp2, "2.2.2.0", 
             "http://www.test-download.com", "test-app-2.exe", 
             "N2VhZGRjYmNjYTFhNjU3OTcyMjU3OWE4YThhNDA3ZWI2NTA4M2ZiYyAgcG9tLnhtbAo=", 

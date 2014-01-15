@@ -44,7 +44,7 @@ public class RequestTest {
       TestUtils.setupStaticDBContent(session);
       
       Application testApp = new Application("Test Application", "Test Application Description", 
-            "{test-app-1234}", TestUtils.TEST_CREATOR_NAME);
+            "{test-app-1234}", "", TestUtils.TEST_CREATOR_NAME);
       ApplicationVersion testAppVersion1 = new ApplicationVersion(testApp, "0.0.0.0", 
             "http://assets.liveexperttest.net", "testAppInstaller.exe", "testHash1234=", 
             1234, TestUtils.TEST_CREATOR_NAME);
