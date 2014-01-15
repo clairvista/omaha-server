@@ -1,6 +1,8 @@
 package com.clairvista.liveexpert.omaha.server.util;
 
 import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 

@@ -23,6 +23,9 @@ public class Application {
    @Column(name="app_id")
    private String appID;
 
+   @Column(name="install_arguments")
+   private String installArguments;
+   
    @Column(name="created_time")
    private Date createdTime;
 
@@ -31,10 +34,11 @@ public class Application {
    
    public Application() { }
    
-   public Application(String name, String description, String appID, String creator) {
+   public Application(String name, String description, String appID, String installArguments, String creator) {
       this.name = name;
       this.description = description;
       this.appID = appID;
+      this.installArguments = installArguments;
       createdBy = creator;
    }
 
@@ -68,6 +72,14 @@ public class Application {
 
    public void setAppID(String appID) {
       this.appID = appID;
+   }
+
+   public String getInstallArguments() {
+      return installArguments;
+   }
+
+   public void setInstallArguments(String installArguments) {
+      this.installArguments = installArguments;
    }
 
    public Date getCreatedTime() {
