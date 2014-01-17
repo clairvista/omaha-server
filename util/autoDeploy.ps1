@@ -171,7 +171,7 @@ Auto Deploy Input Arguments:
 
    # Server Constants
    $serverUploadDir = "~/deploymentUpload"
-   $serverDeploymentDir = "$CATALINA_HOME/webapps"
+   $serverDeploymentDir = "`$CATALINA_HOME/webapps"
    $serverBackupDir = "~/deploymentBackups"
 
    IF ($debug) {
