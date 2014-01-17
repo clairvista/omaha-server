@@ -115,10 +115,6 @@ Function Deploy-New-Version Called:
         return $FALSE
     }
 
-    $statusIndicatorCleanupCommand = "rm $deploymentFilePath.*"
-    IF ($debug) { Write-Host "Cleaning up the status indicator files with: ${statusIndicatorCleanupCommand}" }
-    $deployResult = Invoke-SshCommand -InvokeOnAll -Command $statusIndicatorCleanupCommand
-
     return $TRUE
 }
 
