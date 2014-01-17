@@ -1,8 +1,8 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>omahaServer</groupId>
-  <artifactId>omahaServer</artifactId>
-  <version>1.1.0</version>
+  <artifactId>omaha</artifactId>
+  <version>0.0.0.0</version>
   <packaging>war</packaging>
   <name>Live Expert Omaha Server</name>
   <description>An Omaha Update Server to support the Live Expert suite of products.</description>
@@ -160,6 +160,15 @@
 
   <build>
     <sourceDirectory>src</sourceDirectory>
+    
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+    <finalName>omaha</finalName>
+      
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
