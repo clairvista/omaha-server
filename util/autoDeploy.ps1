@@ -35,7 +35,7 @@ function Upload-Artifact ($artifactPath, $server, $username, $keyFile, $uploadPa
         Write-Host @"
 Function Upload-Artifact Called:
  -- Artifact Path: $artifactPath
- -- Servers: $servers
+ -- Server: $serverHost
  -- Username: $username
  -- Upload Path: $uploadPath
 "@
@@ -48,7 +48,7 @@ Function Upload-Artifact Called:
     #   get around this "ECHO Y |" or "TYPE yes.txt |" must be prepended
     #   to the pscp.exe command. This is only required for the first time.
     #   When this is done, the batch argument must be removed.
-    $uploadCommand = "$scriptDir\..\lib\pscp.exe -batch -scp -2 -r -q -i `"$keyFile`" `"$artifactPath`" $username@$server`:$uploadPath"
+    $uploadCommand = "$scriptDir\pscp.exe -batch -scp -2 -r -q -i `"$keyFile`" `"$artifactPath`" $username@$server`:$uploadPath"
     IF ($debug) { Write-Host "Upload Command: $uploadCommand" }
 
     # Push out release artifacts.
