@@ -126,6 +126,16 @@ public class UpdateCheckServiceImpl implements UpdateCheckService {
          
          ActionResponse action = new ActionResponse();
          action.setEvent(ActionAttrs.INSTALL_EVENT);
+         action.setRun(installerName);
+
+         Application app = currentVersion.getApplication();
+         if(app != null) {
+            action.setArguments(app.getInstallArguments());
+         } else {
+            LOGGER.error("Unable to get application for version " + currentVersion.getVersionID() + 
+                  ". Skipping install arguments setting.");
+         }
+         
          manifest.addAction(action);
          response.setManifest(manifest);
       } else {
