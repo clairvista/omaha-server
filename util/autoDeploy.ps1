@@ -46,9 +46,9 @@ Function Upload-Artifact Called:
     # NOTE: The first type pscp.exe is run on a new server, there is a 
     #   mandatory command line input to validate the server's key. To
     #   get around this "ECHO Y |" or "TYPE yes.txt |" must be prepended
-    #   to the pscp.exe command. This is only required for the first time.
-    #   When this is done, the batch argument must be removed.
-    $uploadCommand = "ECHO Y | $scriptDir\pscp.exe -scp -2 -r -i `"$keyFile`" `"$artifactPath`" $username@$server`:$uploadPath"
+    #   to the pscp.exe command and the "-batch" flag must be removed. 
+    #   This is only required for the first time.
+    $uploadCommand = "$scriptDir\pscp.exe -scp -batch -2 -r -i `"$keyFile`" `"$artifactPath`" $username@$server`:$uploadPath"
     IF ($debug) { Write-Host "Upload Command: $uploadCommand" }
 
     # Push out release artifacts.
