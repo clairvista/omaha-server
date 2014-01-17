@@ -200,7 +200,7 @@ Server Constants:
    $deployResult = (Deploy-New-Version $serverUploadDir $serverDeploymentDir $appName)
 
    IF ($debug) { Write-Host "Waiting for service to fully initialize." }
-   Start-Sleep -s 10
+   Start-Sleep -s 15
 
    $wasAppVerified = (Verify-Http-Access $serverHost)
    IF (-Not ($wasAppVerified)) {
